@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.urjc.em.practica_2018-19</groupId>
-	<artifactId>nombrealumno1-nombrealumno2-nombrealumno3</artifactId>
+	<artifactId>d.davila.2016-j.rodriguezag.2016-p.velilla.2016</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
 	<properties>
