@@ -20,7 +20,7 @@ public class Spaceship extends SpaceObject {
 	public Spaceship() {
 		this.setCollisionFactor(SPACESHIP_COLLISION_FACTOR);
 		// Randomize
-		this.initSpaceship(Math.random() * 1000, Math.random() * 600, Math.random() * 360);
+		this.initSpaceship(500, 300, -90/*Math.random() * 360*/);
 	}
 
 	public void initSpaceship(double coordX, double coordY, double facingAngle) {
