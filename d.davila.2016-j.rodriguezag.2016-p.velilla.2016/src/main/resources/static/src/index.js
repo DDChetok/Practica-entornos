@@ -13,7 +13,7 @@ window.onload = function() {
 	}
 
 	// WEBSOCKET CONFIGURATOR
-	game.global.socket = new WebSocket("ws://" + window.location.host +"/spacewar")
+	game.global.socket = new WebSocket("ws://"+ window.location.host +"/spacewar")
 	
 	game.global.socket.onopen = () => {
 		if (game.global.DEBUG_MODE) {
@@ -27,10 +27,29 @@ window.onload = function() {
 		}
 	}
 	
-	game.global.socket.onmessage = (message) => {
-		var msg = JSON.parse(message.data)
+	///////////CHAT////////////////////
+	$('#send-btn').click(() => {
+		var msg = {
+			name : $('#name').val(),
+			message : $('#message').val(),
+			event:'CHAT'
+		}
 		
+		$('#message').val('');
+		
+	    $('#chat').val($('#chat').val() + "\n" + msg.name + ": " + msg.message);
+	    
+	    game.global.socket.send(JSON.stringify(msg));
+	});
+	//////////////////////////////////////
+	
+	game.global.socket.onmessage = (message) => {
+		var msg = JSON.parse(message.data);
 		switch (msg.event) {
+		case 'CHAT':
+			console.log("WS message: " + msg.message);
+			$('#chat').val($('#chat').val() + "\n" + msg.name + ": " + msg.message);
+			break;
 		case 'JOIN':
 			if (game.global.DEBUG_MODE) {
 				console.log('[DEBUG] JOIN message recieved')
