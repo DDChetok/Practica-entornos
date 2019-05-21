@@ -50,6 +50,9 @@ window.onload = function() {
 			console.log("WS message: " + msg.message);
 			$('#chat').val($('#chat').val() + "\n" + msg.name + ": " + msg.message);
 			break;
+		case 'CREATE_ROOM_REQUEST' :
+			console.log("Alguien ha creado una sala llamada: " + msg.roomName + " para jugar " + msg.roomGamemode );
+			break;
 		case 'JOIN':
 			if (game.global.DEBUG_MODE) {
 				console.log('[DEBUG] JOIN message recieved')
@@ -150,4 +153,5 @@ window.onload = function() {
 
 	game.state.start('bootState')
 
+	
 }

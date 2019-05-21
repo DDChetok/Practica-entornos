@@ -30,9 +30,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 	private ObjectMapper json = new ObjectMapper().setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 	
 	//Salas
-	public int numSalasTotal = 10;
-	public AtomicInteger SalaActual = new AtomicInteger(0);
-	public SpacewarGame[] Salas = new SpacewarGame[numSalasTotal];
+	private ConcurrentMap<String,Room> roomMap = new ConcurrentHashMap<>();
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -73,7 +71,6 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 			JsonNode node = mapper.readTree(message.getPayload());
 			ObjectNode msg = mapper.createObjectNode();
 			Player player = (Player) session.getAttributes().get(PLAYER_ATTRIBUTE);
-			String sala = SalaActual.toString();
 
 			switch (node.get("event").asText()) {
 			case "CHAT":
@@ -82,6 +79,15 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				ChatMessage mensaje = json.readValue(message.getPayload(), ChatMessage.class);
 				
 				sendOtherParticipants(session, mensaje);
+				break;
+			
+			case "CREATE_ROOM_REQUEST":
+				Room room = new Room(node.get("roomName").asText(),node.get("roomGamemode").asText(),node.get("roomMaxPlayers").asInt());
+				Room room2 = roomMap.putIfAbsent(room.getRoomName(), room);
+				if(room2 != null && room.areEquals(room2)) {
+					game.broadcast("Y existe una sala con ese nombre");
+				}
+				game.broadcast(node.toString());
 				break;
 			case "JOIN":
 				msg.put("event", "JOIN");

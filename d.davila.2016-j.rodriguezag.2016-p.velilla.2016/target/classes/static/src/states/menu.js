@@ -12,6 +12,7 @@ Spacewar.menuState.prototype = {
 		if (game.global.DEBUG_MODE) {
 			console.log("[DEBUG] Entering **MENU** state");
 		}
+		
 
 		this.createGameState();
 	},
@@ -30,14 +31,43 @@ Spacewar.menuState.prototype = {
 
 		//Cargar botones de naves madre
 		this.motherShips[0] = game.add.sprite(0, 0, 'spacewar','large_orange.png');
+		this.motherShips[0].id = 0;
 		this.motherShips[1] = game.add.sprite(870, 0, 'spacewar','large_purple.png');
+		this.motherShips[1].id = 1;
 		this.motherShips[2] = game.add.sprite(440, 470, 'spacewar','large_green.png');
+		this.motherShips[2].id = 2;
+	
 
 		this.game.physics.arcade.enable(this.motherShips);
 		this.game.physics.arcade.enable(game.global.projectiles);
 	},
 
 	create : function() {
+
+		//Local bullets
+		this.bullets = this.game.add.group(); 
+		this.bullets.enableBody = true;
+   		this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
+		this.bullets.createMultiple(50, 'spacewar',['projectile.png']);
+		this.bullets.setAll('anchor.x', 0);
+		this.bullets.setAll('anchor.y', 0.5);
+    	this.bullets.setAll('checkWorldBounds', true);
+		this.bullets.setAll('outOfBoundsKill', true);	
+
+		//Disparar
+		this.fireRate = 100;
+		this.nextFire = 0;
+		this.keys =  {										
+			shot: this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)	
+		}
+
+		//Textos 
+		this.createRoomText = this.game.add.text(5, 110, "CREATE ROOM", { font: "25px Chakra Petch", fill: "#0a2239", align: "center" });
+		this.createRoomText = this.game.add.text(860, 110, "JOIN ROOM", { font: "25px Chakra Petch", fill: "#0a2239", align: "center" });
+		this.createRoomText = this.game.add.text(440, 430, "JOIN A GAME", { font: "25px Chakra Petch", fill: "#0a2239", align: "center" });
+
+		this.shots = [];
+		this.actualShot = 0;
 
 	},
 
@@ -47,18 +77,54 @@ Spacewar.menuState.prototype = {
 			//game.state.start('lobbyState')
 		}
 
-		this.game.physics.arcade.overlap(game.global.proyectiles, this.motherShips, this.resolverColision,null,this);	
+		if(this.keys.shot.isDown){
+			this.fire();
+		}
+
+		this.game.physics.arcade.overlap(this.shots, this.motherShips, this.resolverColision,null,this);	
+		
 		
 	},
 
-	resolverColision: function(proyectile,motherShips){
-		let explosion = game.add.sprite(projectile.posX, projectile.posY, 'explosion')
-		explosion.animations.add('explosion')
-		explosion.anchor.setTo(0.5, 0.5)
-		explosion.scale.setTo(2, 2)
-		explosion.animations.play('explosion', 15, false, true)
-						
-		game.global.projectiles[projectile.id].image.visible = false
+	fire: function(){
+
+		var speed = 10;
+		if (this.game.time.now > this.nextFire && this.bullets.countDead() > 0)
+   		{
+			this.nextFire = this.game.time.now + this.fireRate;
+
+			this.shots[this.actualShot] = this.bullets.getFirstDead();
+
+			x = game.global.myPlayer.image.position.x + (30 * Math.cos(game.global.myPlayer.image.rotation));
+			y = game.global.myPlayer.image.position.y + (30 * Math.sin(game.global.myPlayer.image.rotation));
+			this.shots[this.actualShot].position.x = x;
+			this.shots[this.actualShot].position.y = y;
+			this.shots[this.actualShot].rotation = this.game.physics.arcade.angleBetween(game.global.myPlayer.image, this.shots[this.actualShot]);	
+			
+			this.shots[this.actualShot].reset(x, y);
+			this.shots[this.actualShot].body.velocity.setToPolar(game.global.myPlayer.image.rotation,250);
+			//this.game.physics.arcade.moveToPointer(this.shots[this.actualShot], 100);
+
+		}
+		this.actualShot++;
+		if(this.actualShot > 50){
+			this.actualShot=0;
+		}
+
+	},
+
+	resolverColision: function(proyectile,motherShip){
+		switch(motherShip.id){
+			case 0:
+				game.state.start('lobbyState')
+				break;
+			case 1:
+				game.state.start('roomState')
+				break;
+			case 2:
+				game.state.start('matchmakingState')
+				break;
+		}
 	},
 
 	sendPlayerInfo: function(){
@@ -84,7 +150,7 @@ Spacewar.menuState.prototype = {
 		if (this.dKey.isDown)
 			msg.movement.rotRight = true;
 		if (this.spaceKey.isDown) {
-			msg.bullet = this.fireBullet()
+			//msg.bullet = this.fireBullet()
 		}
 
 		if (game.global.DEBUG_MODE) {
