@@ -10,6 +10,7 @@ public class Player extends Spaceship {
 	private final WebSocketSession session;
 	private final int playerId;
 	private final String shipType;
+	private int sala;
 
 	public Player(int playerId, WebSocketSession session) {
 		this.playerId = playerId;

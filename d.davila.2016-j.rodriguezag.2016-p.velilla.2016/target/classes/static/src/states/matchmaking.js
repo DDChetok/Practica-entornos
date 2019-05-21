@@ -12,7 +12,7 @@ Spacewar.matchmakingState.prototype = {
 
 	preload : function() {
 		if (game.global.DEBUG_MODE) {
-			console.log("[DEBUG] Joining room...");
+			console.log("[DEBUG] Searching room...");
 		}
 		let message = {
 			event : 'JOIN ROOM'
