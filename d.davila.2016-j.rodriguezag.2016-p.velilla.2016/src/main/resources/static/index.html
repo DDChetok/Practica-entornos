@@ -57,6 +57,34 @@
 		display: none;
 	}
 
+	input[id=RoomNameSearch] {
+		position: absolute;
+		z-index: 1000;
+		width: 10%;
+		padding: 12px 20px;
+		margin: 150px 300px;
+		display: inline-block;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		box-sizing: border-box;
+		font-size: 200%;
+		display: none;
+	}
+
+	input[id="RoomJoin"] {
+		position: absolute;
+		z-index: 1000;
+		margin: 300px 600px;
+		width: 10%;
+		padding: 12px 12px;
+		display: inline-block;
+		border: 3px solid rgb(202, 148, 98);
+		border-radius: 4px;
+		box-sizing: border-box;
+		font-size: 150%;
+		display: none;
+	}
+
 </style>
 
 <head>
@@ -80,6 +108,11 @@
 
 <body>
 	<!-- div donde ubicaremos el juego -->
+	<!--BOTONES DE UNIRSE SALA-->
+	<input type="text" id="RoomNameSearch" placeholder="Name">
+	<input id="RoomJoin" type="button" onclick = "Spacewar.roomState.prototype.joinRoom()" value="Join the room">
+
+	<!--BOTONES DE CREAR SALA-->
 	<input type="text" id="RoomName" placeholder="Name">
 
 	<select id="RoomGamemode" name="Tipo 1">
@@ -91,6 +124,7 @@
 
 	<input id="RoomCreate" type="button" onclick = "Spacewar.lobbyState.prototype.createRoom()" value="Create the room"> <!--onclick="CodiPokedex.Searcher.state.start('Creator')"-->
 
+	<!--CHAT-->
 	<div id="gameDiv"></div>
 	<div class="panel">
 		<span>Name: </span><input type="text" id="name" placeholder="Name"/>

@@ -46,12 +46,38 @@ window.onload = function() {
 	game.global.socket.onmessage = (message) => {
 		var msg = JSON.parse(message.data);
 		switch (msg.event) {
+		case 'JOIN_ROOM_REQUEST':
+			if(msg.existe){
+				console.log("Te has unido a la sala");
+				game.global.myPlayer.room = {
+					name : msg.roomName
+				}
+				game.state.start('matchmakingState');
+			}else{
+				console.log("No existe ninguna sala con ese nombre");
+			}
+			break;
+		case 'CHECK_ESTADO':
+			console.log(msg.numJugadores);
+			if(msg.numJugadores >= 2){
+				game.state.start('gameState');
+			}
+			break;
 		case 'CHAT':
 			console.log("WS message: " + msg.message);
 			$('#chat').val($('#chat').val() + "\n" + msg.name + ": " + msg.message);
 			break;
 		case 'CREATE_ROOM_REQUEST' :
-			console.log("Alguien ha creado una sala llamada: " + msg.roomName + " para jugar " + msg.roomGamemode );
+			if(msg.salaCreada){
+				console.log("Se ha creado la sala " + msg.roomName + " para jugar " + msg.roomGamemode );
+				game.global.myPlayer.room = {
+					name : msg.roomName
+				}
+				game.state.start('matchmakingState');
+			}else{
+				console.log("Ya hay una sala con ese nombre, gl in esports :(");
+			}
+			
 			break;
 		case 'JOIN':
 			if (game.global.DEBUG_MODE) {
@@ -64,24 +90,7 @@ window.onload = function() {
 				console.log('[DEBUG] ID assigned to player: ' + game.global.myPlayer.id)
 			}
 			break
-		case 'NEW ROOM' :
-			if (game.global.DEBUG_MODE) {
-				console.log('[DEBUG] NEW ROOM message recieved')
-				console.dir(msg)
-			}
-			game.global.myPlayer.room = {
-					name : msg.room
-			}
-			break
-		case 'JOIN ROOM' :
-			if (game.global.DEBUG_MODE) {
-				console.log('[DEBUG] NEW ROOM message recieved')
-				console.dir(msg)
-			}
-			game.global.myPlayer.room = {
-					name : msg.room
-			}
-			break
+
 		case 'GAME STATE UPDATE' :
 			if (game.global.DEBUG_MODE) {
 				console.log('[DEBUG] GAME STATE UPDATE message recieved')

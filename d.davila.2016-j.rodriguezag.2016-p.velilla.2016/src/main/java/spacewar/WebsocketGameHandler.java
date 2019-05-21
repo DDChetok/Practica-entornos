@@ -73,6 +73,28 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 			Player player = (Player) session.getAttributes().get(PLAYER_ATTRIBUTE);
 
 			switch (node.get("event").asText()) {
+			case "JOIN_ROOM_REQUEST":
+				String roomNameJoin = node.get("roomName").asText();
+				if(roomMap.containsKey(roomNameJoin)) { //Si existe la sala
+					msg.put("roomName", roomNameJoin);
+					msg.put("existe", true);
+					Room roomJoin = roomMap.get(roomNameJoin);
+					roomJoin.playersSet.put(player.getPlayerId(),player);
+				}else { //Si no existe la sala
+					msg.put("existe", false);
+				}
+				msg.put("event", "JOIN_ROOM_REQUEST");
+				player.getSession().sendMessage(new TextMessage(msg.toString()));
+				break;
+			case "CHECK_ESTADO":
+				String roomName = node.get("roomName").asText();
+				Room room_1 = roomMap.get(roomName);
+				int numJugadores = room_1.playersSet.size();
+				
+				msg.put("event","CHECK_ESTADO");
+				msg.put("numJugadores",numJugadores);
+				player.getSession().sendMessage(new TextMessage(msg.toString()));
+				break;
 			case "CHAT":
 				//chat
 				System.out.println("Message received: " + message.getPayload());
@@ -84,20 +106,24 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 			case "CREATE_ROOM_REQUEST":
 				Room room = new Room(node.get("roomName").asText(),node.get("roomGamemode").asText(),node.get("roomMaxPlayers").asInt());
 				Room room2 = roomMap.putIfAbsent(room.getRoomName(), room);
-				if(room2 != null && room.areEquals(room2)) {
-					game.broadcast("Y existe una sala con ese nombre");
+				msg.put("event","CREATE_ROOM_REQUEST");
+				msg.put("roomName",room.getRoomName());
+				msg.put("roomGamemode",room.getRoomGamemode());
+				msg.put("roomMaxPlayers",room.getRoomMaxPlayers());
+				if(room2 != null && room.areEquals(room2)) { //Si son iguales, no se inserta
+					msg.put("salaCreada", false);
+					//game.broadcast("Y existe una sala con ese nombre");
+				}else { //Si se ha insertado correctamente
+					msg.put("salaCreada", true);
+					room.playersSet.put(player.getPlayerId(),player);
 				}
-				game.broadcast(node.toString());
+				player.getSession().sendMessage(new TextMessage(msg.toString()));
 				break;
+				
 			case "JOIN":
 				msg.put("event", "JOIN");
 				msg.put("id", player.getPlayerId());
 				msg.put("shipType", player.getShipType());
-				player.getSession().sendMessage(new TextMessage(msg.toString()));
-				break;
-			case "JOIN ROOM":
-				msg.put("event", "JOIN ROOM");
-				msg.put("room", "GLOBAL");
 				player.getSession().sendMessage(new TextMessage(msg.toString()));
 				break;
 			case "UPDATE MOVEMENT":

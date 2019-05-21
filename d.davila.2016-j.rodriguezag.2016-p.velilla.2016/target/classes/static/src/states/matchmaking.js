@@ -8,16 +8,23 @@ Spacewar.matchmakingState.prototype = {
 		if (game.global.DEBUG_MODE) {
 			console.log("[DEBUG] Entering **MATCH-MAKING** state");
 		}
+		
+		// We create a procedural starfield background
+		this.numStars = 100
+		for (var i = 0; i < this.numStars; i++) {
+			let sprite = game.add.sprite(game.world.randomX,
+					game.world.randomY, 'spacewar', 'staralpha.png');
+			let random = game.rnd.realInRange(0, 0.6);
+			sprite.scale.setTo(random, random)
+		}
+
+		this.hideHTML();
 	},
 
 	preload : function() {
 		if (game.global.DEBUG_MODE) {
 			console.log("[DEBUG] Searching room...");
 		}
-		let message = {
-			event : 'JOIN ROOM'
-		}
-		game.global.socket.send(JSON.stringify(message))
 	},
 
 	create : function() {
@@ -29,7 +36,22 @@ Spacewar.matchmakingState.prototype = {
 			if (game.global.DEBUG_MODE) {
 				console.log("[DEBUG] Joined room " + game.global.myPlayer.room);
 			}
-			game.state.start('roomState')
+			//game.state.start('roomState')
 		}
+
+		let msg = { 
+			event: 'CHECK_ESTADO',
+			roomName: game.global.myPlayer.room.name
+		}
+
+		game.global.socket.send(JSON.stringify(msg));
+		console.log("MATCHMAKING");
+	},
+
+	hideHTML: function(){
+		document.getElementById("RoomName").style.display = "none";
+		document.getElementById("RoomGamemode").style.display = "none";
+		document.getElementById("RoomMaxPlayers").style.display = "none";
+		document.getElementById("RoomCreate").style.display = "none";
 	}
 }

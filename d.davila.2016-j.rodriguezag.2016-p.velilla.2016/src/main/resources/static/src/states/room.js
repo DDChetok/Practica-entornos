@@ -11,25 +11,33 @@ Spacewar.roomState.prototype = {
 	},
 
 	preload : function() {
-		if(msg.event == "JOIN ROOM"){
-			let message = {
-					event : 'JOIN ROOM'
-			}
-		}else if (msg.event == "CREATE ROOM"){
-			let message = {
-					event : 'CREATE ROOM'
-			}
-		}
-		game.global.socket.send(JSON.stringify(message))
+
 	},
 
 	create : function() {
-
+		this.showHTML();
 	},
 
 	update : function() {
-		game.state.start('gameState')
+		//game.state.start('gameState')
+		console.log("ROOM");
 	},
+
+	joinRoom: function(){
+		var msg = {
+			event: "JOIN_ROOM_REQUEST",
+			roomName : document.getElementById("RoomNameSearch").value
+		}
+		
+		game.global.socket.send(JSON.stringify(msg));
+
+	},
+
+
+	showHTML: function(){
+		document.getElementById("RoomNameSearch").style.display = "block";
+		document.getElementById("RoomJoin").style.display = "block";
+	}
 
 	
 }
