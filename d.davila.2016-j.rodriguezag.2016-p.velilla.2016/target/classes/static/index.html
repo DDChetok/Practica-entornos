@@ -1,5 +1,63 @@
 <!DOCTYPE html>
 <html>
+<style>
+	input[id=RoomName] {
+		position: absolute;
+		z-index: 1000;
+		width: 10%;
+		padding: 12px 20px;
+		margin: 150px 300px;
+		display: inline-block;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		box-sizing: border-box;
+		font-size: 200%;
+		display: none;
+	}
+
+	select[id="RoomGamemode"] {
+		position: absolute;
+		z-index: 1000;
+		margin: 300px 300px;
+		width: 10%;
+		padding: 12px 20px;
+		display: inline-block;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		box-sizing: border-box;
+		font-size: 150%;
+		display: none;
+	}
+	
+	input[id="RoomMaxPlayers"] {
+		position: absolute;
+		z-index: 1000;
+		margin: 450px 300px;
+		width: 10%;
+		padding: 12px 20px;
+		display: inline-block;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		box-sizing: border-box;
+		font-size: 150%;
+		display: none;
+	}
+
+	input[id="RoomCreate"] {
+		position: absolute;
+		z-index: 1000;
+		margin: 300px 600px;
+		width: 10%;
+		padding: 12px 12px;
+		display: inline-block;
+		border: 3px solid rgb(202, 148, 98);
+		border-radius: 4px;
+		box-sizing: border-box;
+		font-size: 150%;
+		display: none;
+	}
+
+</style>
 
 <head>
 <meta charset="UTF-8" />
@@ -21,6 +79,17 @@
 
 <body>
 	<!-- div donde ubicaremos el juego -->
+	<input type="text" id="RoomName" placeholder="Name">
+
+	<select id="RoomGamemode" name="Tipo 1">
+		<option value="classic">Classic</option>
+		<option value="battle_royale">Battle Royale</option>
+	</select>
+
+	<input type="number" id="RoomMaxPlayers" min="1" max="5">
+
+	<input id="RoomCreate" type="button" onclick = "Spacewar.lobbyState.prototype.createRoom()" value="Create the room"> <!--onclick="CodiPokedex.Searcher.state.start('Creator')"-->
+
 	<div id="gameDiv"></div>
 </body>
 </html>

@@ -31,6 +31,9 @@ window.onload = function() {
 		var msg = JSON.parse(message.data)
 		
 		switch (msg.event) {
+		case 'CREATE_ROOM_REQUEST' :
+			console.log("Alguien ha creado una sala llamada: " + msg.roomName + " para jugar " + msg.roomGamemode );
+			break;
 		case 'JOIN':
 			if (game.global.DEBUG_MODE) {
 				console.log('[DEBUG] JOIN message recieved')
@@ -122,4 +125,5 @@ window.onload = function() {
 
 	game.state.start('bootState')
 
+	
 }
