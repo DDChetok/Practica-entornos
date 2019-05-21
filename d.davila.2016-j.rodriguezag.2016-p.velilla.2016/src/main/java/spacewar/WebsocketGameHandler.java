@@ -100,12 +100,6 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				msg.put("room", "GLOBAL");
 				player.getSession().sendMessage(new TextMessage(msg.toString()));
 				break;
-			case "CREATE ROOM":
-				msg.put("event", "NEW ROOM");
-				msg.put("room", "sala");
-				SalaActual.incrementAndGet();
-				player.getSession().sendMessage(new TextMessage(msg.toString()));
-				break;
 			case "UPDATE MOVEMENT":
 				player.loadMovement(node.path("movement").get("thrust").asBoolean(),
 						node.path("movement").get("brake").asBoolean(),
