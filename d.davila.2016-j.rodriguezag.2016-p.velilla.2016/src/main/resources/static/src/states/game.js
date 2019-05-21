@@ -11,6 +11,8 @@ Spacewar.gameState.prototype = {
 		if (game.global.DEBUG_MODE) {
 			console.log("[DEBUG] Entering **GAME** state");
 		}
+
+		this.hideHTML();
 	},
 
 	preload : function() {
@@ -96,5 +98,10 @@ Spacewar.gameState.prototype = {
 			console.log("[DEBUG] Sending UPDATE MOVEMENT message to server")
 		}
 		game.global.socket.send(JSON.stringify(msg))
+	},
+
+	hideHTML: function(){
+		document.getElementById("RoomNameSearch").style.display = "none";
+		document.getElementById("RoomJoin").style.display = "none";
 	}
 }

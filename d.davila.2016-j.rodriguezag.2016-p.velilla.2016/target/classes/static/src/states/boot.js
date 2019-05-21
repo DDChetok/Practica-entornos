@@ -15,6 +15,8 @@ Spacewar.bootState.prototype = {
 	preload : function() {
 		this.game.renderer.renderSession.roundPixels = true
 		this.time.desiredFps = game.global.FPS
+
+		game.stage.disableVisibilityChange=true;
 	},
 
 	create : function() {

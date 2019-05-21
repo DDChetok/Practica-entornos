@@ -10,12 +10,14 @@ public class Player extends Spaceship {
 	private final WebSocketSession session;
 	private final int playerId;
 	private final String shipType;
-	private int sala;
+	public String roomName;
+	public boolean pintado;
 
 	public Player(int playerId, WebSocketSession session) {
 		this.playerId = playerId;
 		this.session = session;
 		this.shipType = this.getRandomShipType();
+		pintado = false;
 	}
 
 	public int getPlayerId() {

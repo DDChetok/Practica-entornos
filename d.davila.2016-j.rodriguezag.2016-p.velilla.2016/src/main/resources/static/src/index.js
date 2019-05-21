@@ -2,6 +2,7 @@ window.onload = function() {
 
 	game = new Phaser.Game(1024, 600, Phaser.AUTO, 'gameDiv')
 
+
 	// GLOBAL VARIABLES
 	game.global = {
 		FPS : 30,
@@ -59,8 +60,13 @@ window.onload = function() {
 			break;
 		case 'CHECK_ESTADO':
 			console.log(msg.numJugadores);
-			if(msg.numJugadores >= 2){
+			if(msg.numJugadores >= 1){
+				
+				for (i = 0;i < game.global.otherPlayers.length;i++){
+					delete game.global.otherPlayers[i];
+				}
 				game.state.start('gameState');
+
 			}
 			break;
 		case 'CHAT':
@@ -86,6 +92,9 @@ window.onload = function() {
 			}
 			game.global.myPlayer.id = msg.id
 			game.global.myPlayer.shipType = msg.shipType
+			game.global.myPlayer.room = {
+				name : msg.roomName
+			}
 			if (game.global.DEBUG_MODE) {
 				console.log('[DEBUG] ID assigned to player: ' + game.global.myPlayer.id)
 			}

@@ -23,12 +23,13 @@ Spacewar.menuState.prototype = {
 			if (game.global.DEBUG_MODE) {
 				console.log("[DEBUG] Forcing joining server...");
 			}
-			let message = {
-				event : 'JOIN'
-			}
-			game.global.socket.send(JSON.stringify(message))
+			
+			
 		}
-
+		let message = {
+			event : 'JOIN'
+		}
+		game.global.socket.send(JSON.stringify(message))
 		//Cargar botones de naves madre
 		this.motherShips[0] = game.add.sprite(0, 0, 'spacewar','large_orange.png');
 		this.motherShips[0].id = 0;

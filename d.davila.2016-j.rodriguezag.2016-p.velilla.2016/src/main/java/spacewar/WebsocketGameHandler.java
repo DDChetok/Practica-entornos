@@ -29,8 +29,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 	private Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 	private ObjectMapper json = new ObjectMapper().setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 	
-	//Salas
-	private ConcurrentMap<String,Room> roomMap = new ConcurrentHashMap<>();
+	
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -43,6 +42,8 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 		msg.put("id", player.getPlayerId());
 		msg.put("shipType", player.getShipType());
 		player.getSession().sendMessage(new TextMessage(msg.toString()));
+		
+		player.roomName = "MENU";
 		
 		game.addPlayer(player);
 	}
@@ -75,11 +76,12 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 			switch (node.get("event").asText()) {
 			case "JOIN_ROOM_REQUEST":
 				String roomNameJoin = node.get("roomName").asText();
-				if(roomMap.containsKey(roomNameJoin)) { //Si existe la sala
+				if(game.roomMap.containsKey(roomNameJoin)) { //Si existe la sala
 					msg.put("roomName", roomNameJoin);
 					msg.put("existe", true);
-					Room roomJoin = roomMap.get(roomNameJoin);
+					Room roomJoin = game.roomMap.get(roomNameJoin);
 					roomJoin.playersSet.put(player.getPlayerId(),player);
+					player.roomName = roomNameJoin;
 				}else { //Si no existe la sala
 					msg.put("existe", false);
 				}
@@ -88,7 +90,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				break;
 			case "CHECK_ESTADO":
 				String roomName = node.get("roomName").asText();
-				Room room_1 = roomMap.get(roomName);
+				Room room_1 = game.roomMap.get(roomName);
 				int numJugadores = room_1.playersSet.size();
 				
 				msg.put("event","CHECK_ESTADO");
@@ -105,17 +107,18 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 			
 			case "CREATE_ROOM_REQUEST":
 				Room room = new Room(node.get("roomName").asText(),node.get("roomGamemode").asText(),node.get("roomMaxPlayers").asInt());
-				Room room2 = roomMap.putIfAbsent(room.getRoomName(), room);
+				Room room2 = game.roomMap.putIfAbsent(room.getRoomName(), room);
 				msg.put("event","CREATE_ROOM_REQUEST");
 				msg.put("roomName",room.getRoomName());
 				msg.put("roomGamemode",room.getRoomGamemode());
 				msg.put("roomMaxPlayers",room.getRoomMaxPlayers());
 				if(room2 != null && room.areEquals(room2)) { //Si son iguales, no se inserta
 					msg.put("salaCreada", false);
-					//game.broadcast("Y existe una sala con ese nombre");
+					
 				}else { //Si se ha insertado correctamente
 					msg.put("salaCreada", true);
 					room.playersSet.put(player.getPlayerId(),player);
+					player.roomName = room.getRoomName();
 				}
 				player.getSession().sendMessage(new TextMessage(msg.toString()));
 				break;
@@ -124,6 +127,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				msg.put("event", "JOIN");
 				msg.put("id", player.getPlayerId());
 				msg.put("shipType", player.getShipType());
+				msg.put("roomName", "MENU");
 				player.getSession().sendMessage(new TextMessage(msg.toString()));
 				break;
 			case "UPDATE MOVEMENT":
@@ -133,7 +137,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 						node.path("movement").get("rotRight").asBoolean());
 				if (node.path("bullet").asBoolean()) {
 					Projectile projectile = new Projectile(player, this.projectileId.incrementAndGet());
-					game.addProjectile(projectile.getId(), projectile);
+					game.roomMap.get(player.roomName).addProjectile(projectile.getId(), projectile); //////////////////////////
 				}
 				break;
 			default:
