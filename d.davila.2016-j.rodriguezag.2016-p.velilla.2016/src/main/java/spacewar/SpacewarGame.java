@@ -152,14 +152,13 @@ public class SpacewarGame {
 				}
 	
 				if (removeBullets)
-					this.projectiles.keySet().removeAll(bullets2Remove);
+					room.projectiles.keySet().removeAll(bullets2Remove);
 	
 				json.put("event", "GAME STATE UPDATE");
 				json.putPOJO("players", arrayNodePlayers);
 				json.putPOJO("projectiles", arrayNodeProjectiles);
 	
 				this.broadcast(json.toString());
-				System.out.println(json.toString());
 			}
 		} catch (Throwable ex) {
 

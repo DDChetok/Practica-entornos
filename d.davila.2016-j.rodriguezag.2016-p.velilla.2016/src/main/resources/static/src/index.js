@@ -123,10 +123,11 @@ window.onload = function() {
 								game.global.otherPlayers[player.id].image.y = player.posY
 								game.global.otherPlayers[player.id].image.angle = player.facingAngle
 							}
-					}
+						
 					}
 				}
-				
+				}
+			}
 				for (var projectile of msg.projectiles) {
 					if(game.global.myPlayer.room.name == player.nombre){
 						if (projectile.isAlive) {
@@ -147,7 +148,6 @@ window.onload = function() {
 							}
 							game.global.projectiles[projectile.id].image.visible = false
 						}
-					}
 				}
 			}
 			break
@@ -156,8 +156,10 @@ window.onload = function() {
 				console.log('[DEBUG] REMOVE PLAYER message recieved')
 				console.dir(msg.players)
 			}
-			game.global.otherPlayers[msg.id].image.destroy()
-			delete game.global.otherPlayers[msg.id]
+			if(msg.id !== game.global.myPlayer.id){
+				game.global.otherPlayers[msg.id].image.destroy()
+				delete game.global.otherPlayers[msg.id]
+			}
 		default :
 			console.dir(msg)
 			break
