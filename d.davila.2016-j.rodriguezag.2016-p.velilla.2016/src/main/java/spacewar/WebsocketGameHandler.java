@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -27,6 +29,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 	
 	//Chat
 	private Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+	public Lock roomLock = new ReentrantLock();
 	private ObjectMapper json = new ObjectMapper().setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 	
 	
@@ -78,7 +81,9 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 			Player player = (Player) session.getAttributes().get(PLAYER_ATTRIBUTE);
 
 			switch (node.get("event").asText()) {
+			
 			case "JOIN_ROOM_REQUEST":
+				roomLock.lock();
 				String roomNameJoin = node.get("roomName").asText();
 				if(game.roomMap.containsKey(roomNameJoin)) { //Si existe la sala
 					
@@ -92,23 +97,27 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				}else { //Si no existe la sala
 					msg.put("existe", false);
 				}
+				
 				msg.put("event", "JOIN_ROOM_REQUEST");
 				player.lock.lock();
 				player.getSession().sendMessage(new TextMessage(msg.toString()));
 				player.lock.unlock();
+				roomLock.unlock();
 				break;
 			case "CHECK_ESTADO":
 				String roomName = node.get("roomName").asText();
+				roomLock.lock();
 				Room room_1 = game.roomMap.get(roomName);
 				int numJugadores = room_1.playersSet.size();
-				
-				
+			
 				msg.put("event","CHECK_ESTADO");
 				msg.put("numJugadores",numJugadores);
 				msg.put("maxJugadores",room_1.getRoomMaxPlayers());
 				player.lock.lock();
 				player.getSession().sendMessage(new TextMessage(msg.toString()));
 				player.lock.unlock();
+				
+				roomLock.unlock();
 				break;
 			case "CHAT":
 				//chat
@@ -119,6 +128,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				break;
 			
 			case "CREATE_ROOM_REQUEST":
+				roomLock.lock();
 				Room room = new Room(node.get("roomName").asText(),node.get("roomGamemode").asText(),node.get("roomMaxPlayers").asInt());
 				Room room2 = game.roomMap.putIfAbsent(room.getRoomName(), room);
 				msg.put("event","CREATE_ROOM_REQUEST");
@@ -145,6 +155,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				player.lock.lock();
 				player.getSession().sendMessage(new TextMessage(msg.toString()));
 				player.lock.unlock();
+				roomLock.unlock();
 				break;
 			case "ADD_PLAYER_NAME_REQUEST":
 				player.setPlayerName(node.get("playername").asText());
