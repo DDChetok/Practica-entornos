@@ -46,6 +46,12 @@ Spacewar.lobbyState.prototype = {
 		game.global.socket.send(JSON.stringify(msg));
 
 	},
+	enterPlayerName: function(){
+		var msg = {
+			event: "ADD_PLAYER_NAME_REQUEST",
+			playername : document.getElementById("PlayerName").value
+		}
+	},
 
 	showHTML: function(){
 		document.getElementById("RoomName").style.display = "block";

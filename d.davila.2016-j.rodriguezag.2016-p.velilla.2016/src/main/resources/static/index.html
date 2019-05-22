@@ -84,6 +84,33 @@
 		font-size: 150%;
 		display: none;
 	}
+	input[id=enterPlayerName] {
+		position: absolute;
+		z-index: 1000;
+		width: 10%;
+		padding: 12px 20px;
+		margin: 150px 300px;
+		display: inline-block;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		box-sizing: border-box;
+		font-size: 200%;
+		display: none;
+	}
+
+	input[id="confirmPlayerName"] {
+		position: absolute;
+		z-index: 1000;
+		margin: 300px 600px;
+		width: 10%;
+		padding: 12px 12px;
+		display: inline-block;
+		border: 3px solid rgb(202, 148, 98);
+		border-radius: 4px;
+		box-sizing: border-box;
+		font-size: 150%;
+		display: none;
+	}
 
 </style>
 
@@ -99,6 +126,7 @@
 <script src="src/states/boot.js"></script>
 <script src="src/states/preload.js"></script>
 <script src="src/states/menu.js"></script>
+<script src="src/states/login.js"></script>
 <script src="src/states/lobby.js"></script>
 <script src="src/states/matchmaking.js"></script>
 <script src="src/states/room.js"></script>
@@ -111,8 +139,11 @@
 	<!--BOTONES DE UNIRSE SALA-->
 	<input type="text" id="RoomNameSearch" placeholder="Name">
 	<input id="RoomJoin" type="button" onclick = "Spacewar.roomState.prototype.joinRoom()" value="Join the room">
-
+	<!--BOTONES DE CREAR NOMBRE JUGADOR-->
+	<input type="text" id="enterPlayerName" placeholder="Tu Nombre">
+	<input id="confirmPlayerName" type="button" onclick = "Spacewar.loginState.prototype.enterPlayerName()" value="Join the menu">
 	<!--BOTONES DE CREAR SALA-->
+
 	<input type="text" id="RoomName" placeholder="Name">
 
 	<select id="RoomGamemode" name="Tipo 1">

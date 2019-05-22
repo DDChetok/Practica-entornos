@@ -15,6 +15,7 @@ Spacewar.menuState.prototype = {
 		
 
 		this.createGameState();
+		this.hideHTML();
 	},
 
 	preload : function() {
@@ -215,6 +216,10 @@ Spacewar.menuState.prototype = {
 
 		game.camera.follow(game.global.myPlayer.image);
 
+	},
+	hideHTML: function(){
+		document.getElementById("enterPlayerName").style.display = "none";
+		document.getElementById("confirmPlayerName").style.display = "none";
 	}
 
 }
