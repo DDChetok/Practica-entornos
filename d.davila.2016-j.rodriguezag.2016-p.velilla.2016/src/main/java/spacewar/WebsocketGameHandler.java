@@ -117,6 +117,21 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				msg.put("roomName",room.getRoomName());
 				msg.put("roomGamemode",room.getRoomGamemode());
 				msg.put("roomMaxPlayers",room.getRoomMaxPlayers());
+				
+				/*switch(room.getRoomGamemode()){
+					case "classic":
+						for(Player jugador : game.getPlayers()){
+							jugador.vida = 100;
+						}
+						break;
+					case "battle royale":
+						for(Player jugador : game.getPlayers()){
+							jugador.vida = 100;
+						}
+						break;
+				}*/
+				
+				
 				if(room2 != null && room.areEquals(room2)) { //Si son iguales, no se inserta
 					msg.put("salaCreada", false);
 					
@@ -147,6 +162,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				msg.put("id", player.getPlayerId());
 				msg.put("shipType", player.getShipType());
 				msg.put("roomName", "MENU");
+				msg.put("vida", player.getVida());
 				player.getSession().sendMessage(new TextMessage(msg.toString()));
 				break;
 			case "UPDATE MOVEMENT":

@@ -53,6 +53,7 @@ window.onload = function() {
 				game.global.myPlayer.room = {
 					name : msg.roomName
 				}
+				game.global.myPlayer.vida = msg.vida
 				game.state.start('matchmakingState');
 			}else{
 				console.log("No existe ninguna sala con ese nombre");
@@ -108,9 +109,16 @@ window.onload = function() {
 				console.log('[DEBUG] GAME STATE UPDATE message recieved')
 				console.dir(msg)
 			}
+			
+			if (game.global.myPlayer.vida <= 0){
+				game.global.myPlayer.room.name = "MENU";
+				game.state.start("menuState");
+			}
+			
 			if (typeof game.global.myPlayer.image !== 'undefined') {
 				for (var player of msg.players) {
 					if (game.global.myPlayer.id == player.id) {
+						game.global.myPlayer.vida = player.vida;
 						game.global.myPlayer.image.x = player.posX
 						game.global.myPlayer.image.y = player.posY
 						game.global.myPlayer.image.angle = player.facingAngle						

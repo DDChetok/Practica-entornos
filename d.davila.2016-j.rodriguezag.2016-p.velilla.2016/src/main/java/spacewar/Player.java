@@ -13,6 +13,8 @@ public class Player extends Spaceship {
 	public String roomName;
 	public boolean pintado;
 	private String PlayerName;
+	public int vida = 100;
+	public int puntuacion;
 
 	public Player(int playerId, WebSocketSession session) {
 		this.playerId = playerId;
@@ -40,6 +42,22 @@ public class Player extends Spaceship {
 
 	public void sendMessage(String msg) throws Exception {
 		this.session.sendMessage(new TextMessage(msg));
+	}
+
+	public int getVida() {
+		return vida;
+	}
+
+	public void setVida(int vida) {
+		this.vida = vida;
+	}
+
+	public int getPuntuacion() {
+		return puntuacion;
+	}
+
+	public void setPuntuacion(int puntuacion) {
+		this.puntuacion = puntuacion;
 	}
 
 	public String getShipType() {

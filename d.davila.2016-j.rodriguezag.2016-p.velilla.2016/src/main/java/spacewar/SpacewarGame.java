@@ -114,7 +114,9 @@ public class SpacewarGame {
 					jsonPlayer.put("facingAngle", player.getFacingAngle());
 					jsonPlayer.put("nombre", player.getNameRoom());
 					jsonPlayer.put("PlayerNombre", player.getPlayerName());
-					arrayNodePlayers.addPOJO(jsonPlayer);
+					jsonPlayer.put("vida", player.getVida());
+					jsonPlayer.put("puntuacion", player.getPuntuacion());
+					arrayNodePlayers.addPOJO(jsonPlayer);   
 				}
 	
 				// Update bullets and handle collision
@@ -126,9 +128,16 @@ public class SpacewarGame {
 						if ((projectile.getOwner().getPlayerId() != player.getPlayerId()) && player.intersect(projectile)) {
 							// System.out.println("Player " + player.getPlayerId() + " was hit!!!");
 							projectile.setHit(true);
+							player.setVida(player.getVida()-20);
+							projectile.getOwner().setPuntuacion(projectile.getOwner().getPuntuacion()+50);
+							if(player.getVida() <= 0) {
+								room.playersSet.remove(player.getPlayerId());
+								player.roomName = "MENU";
+							}
 							break;
 						}
 					}
+					
 	
 					ObjectNode jsonProjectile = mapper.createObjectNode();
 					jsonProjectile.put("id", projectile.getId());
@@ -154,11 +163,14 @@ public class SpacewarGame {
 				if (removeBullets)
 					room.projectiles.keySet().removeAll(bullets2Remove);
 	
+				
 				json.put("event", "GAME STATE UPDATE");
 				json.putPOJO("players", arrayNodePlayers);
 				json.putPOJO("projectiles", arrayNodeProjectiles);
 	
 				this.broadcast(json.toString());
+				
+				
 			}
 		} catch (Throwable ex) {
 
