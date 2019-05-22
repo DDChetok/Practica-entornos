@@ -95,6 +95,9 @@ window.onload = function() {
 			game.global.myPlayer.room = {
 				name : msg.roomName
 			}
+			game.global.myPlayer.PlayerNombre = document.getElementById("enterPlayerName").value
+			
+			
 			if (game.global.DEBUG_MODE) {
 				console.log('[DEBUG] ID assigned to player: ' + game.global.myPlayer.id)
 			}
@@ -110,7 +113,7 @@ window.onload = function() {
 					if (game.global.myPlayer.id == player.id) {
 						game.global.myPlayer.image.x = player.posX
 						game.global.myPlayer.image.y = player.posY
-						game.global.myPlayer.image.angle = player.facingAngle
+						game.global.myPlayer.image.angle = player.facingAngle						
 					} else {
 						if(game.global.myPlayer.room.name == player.nombre){
 							if (typeof game.global.otherPlayers[player.id] == 'undefined') {

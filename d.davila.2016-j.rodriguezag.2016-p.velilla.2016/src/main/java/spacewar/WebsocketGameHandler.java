@@ -140,6 +140,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 			case "ADD_PLAYER_NAME_REQUEST":
 				player.setPlayerName(node.get("playername").asText());
 				
+				
 				break;	
 			case "JOIN":
 				msg.put("event", "JOIN");

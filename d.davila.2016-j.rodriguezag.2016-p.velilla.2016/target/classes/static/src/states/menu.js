@@ -85,7 +85,9 @@ Spacewar.menuState.prototype = {
 
 		this.game.physics.arcade.overlap(this.shots, this.motherShips, this.resolverColision,null,this);	
 		
-		
+		game.global.myPlayer.textoNombre.setText(game.global.myPlayer.PlayerNombre);
+		game.global.myPlayer.textoNombre.position.x = game.global.myPlayer.image.x;
+		game.global.myPlayer.textoNombre.position.y = game.global.myPlayer.image.y;
 	},
 
 	fire: function(){
@@ -190,6 +192,10 @@ Spacewar.menuState.prototype = {
 		game.global.myPlayer.image = game.add.sprite(0, 0, 'spacewar',
 				game.global.myPlayer.shipType)
 		game.global.myPlayer.image.anchor.setTo(0.5, 0.5)
+		
+		
+		game.global.myPlayer.textoNombre = this.game.add.text(game.global.myPlayer.image.x, game.global.myPlayer.image.y + 20, game.global.myPlayer.PlayerNombre, { font: "20px Chakra Petch", fill: "#0a2239", align: "center" });
+		game.global.myPlayer.textoNombre.anchor.setTo(0.5, 0.5);
 
 		//DAAAAAAAAAAAAAAAAAANIIIIIIIIIIIIIIIIII
 		this.bulletTime = 0

@@ -27,7 +27,9 @@ Spacewar.loginState.prototype = {
 		var msg = {
 			event: "ADD_PLAYER_NAME_REQUEST",
 			playername : document.getElementById("enterPlayerName").value
+			
         }
+		
         game.global.socket.send(JSON.stringify(msg));
         game.state.start('menuState')
 	},
