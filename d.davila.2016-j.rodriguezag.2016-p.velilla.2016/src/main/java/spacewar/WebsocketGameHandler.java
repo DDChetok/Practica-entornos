@@ -52,7 +52,9 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		Player player = (Player) session.getAttributes().get(PLAYER_ATTRIBUTE);
 		sessions.remove(session.getId());
-		game.removePlayer(player);
+		game.roomMap.get(player.roomName).playersSet.remove(player.getPlayerId());
+		
+		//game.removePlayer(player);
 
 		ObjectNode msg = mapper.createObjectNode();
 		msg.put("event", "REMOVE PLAYER");
@@ -122,6 +124,13 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					game.roomMap.get(player.roomName).playersSet.remove(player.getPlayerId()); //Eliminamos al jugador de la sala en la que estaba
 					msg.put("salaCreada", true);
 					room.playersSet.put(player.getPlayerId(),player);
+					
+					//Creamos un nuevo mensaje con la informacion del jugador que se ha ido de la sala para que no nos pinte
+					ObjectNode msg2 = mapper.createObjectNode();
+					msg2.put("event", "REMOVE PLAYER");
+					msg2.put("id", player.getPlayerId());
+					
+					game.broadcast(msg2.toString());
 					
 					player.roomName = room.getRoomName();
 					
