@@ -118,13 +118,17 @@ window.onload = function() {
 						if(game.global.myPlayer.room.name == player.nombre){
 							if (typeof game.global.otherPlayers[player.id] == 'undefined') {
 								game.global.otherPlayers[player.id] = {
-										image : game.add.sprite(player.posX, player.posY, 'spacewar', player.shipType)
+										image : game.add.sprite(player.posX, player.posY, 'spacewar', player.shipType),
+										nombreJugador : game.add.text(player.posX, player.posY + 20, player.PlayerNombre, { font: "25px Chakra Petch", fill: "#0a2239", align: "center" })
 									}
 								game.global.otherPlayers[player.id].image.anchor.setTo(0.5, 0.5)
 							} else {
 								game.global.otherPlayers[player.id].image.x = player.posX
 								game.global.otherPlayers[player.id].image.y = player.posY
 								game.global.otherPlayers[player.id].image.angle = player.facingAngle
+
+								game.global.otherPlayers[player.id].nombreJugador.x = player.posX
+								game.global.otherPlayers[player.id].nombreJugador.y = player.posY+20
 							}
 						
 					}
