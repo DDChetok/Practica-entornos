@@ -77,6 +77,9 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 			case "JOIN_ROOM_REQUEST":
 				String roomNameJoin = node.get("roomName").asText();
 				if(game.roomMap.containsKey(roomNameJoin)) { //Si existe la sala
+					
+					game.roomMap.get(player.roomName).playersSet.remove(player.getPlayerId()); //Eliminamos al jugador de la sala en la que estaba
+					
 					msg.put("roomName", roomNameJoin);
 					msg.put("existe", true);
 					Room roomJoin = game.roomMap.get(roomNameJoin);
@@ -116,9 +119,12 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					msg.put("salaCreada", false);
 					
 				}else { //Si se ha insertado correctamente
+					game.roomMap.get(player.roomName).playersSet.remove(player.getPlayerId()); //Eliminamos al jugador de la sala en la que estaba
 					msg.put("salaCreada", true);
 					room.playersSet.put(player.getPlayerId(),player);
+					
 					player.roomName = room.getRoomName();
+					
 				}
 				player.getSession().sendMessage(new TextMessage(msg.toString()));
 				break;

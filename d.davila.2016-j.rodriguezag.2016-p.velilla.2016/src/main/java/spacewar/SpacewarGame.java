@@ -112,6 +112,8 @@ public class SpacewarGame {
 					jsonPlayer.put("posX", player.getPosX());
 					jsonPlayer.put("posY", player.getPosY());
 					jsonPlayer.put("facingAngle", player.getFacingAngle());
+					jsonPlayer.put("nombre", player.getNameRoom());
+					jsonPlayer.put("pintado", player.getPintado());
 					arrayNodePlayers.addPOJO(jsonPlayer);
 				}
 	

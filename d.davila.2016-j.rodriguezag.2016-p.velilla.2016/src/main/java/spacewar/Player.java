@@ -27,6 +27,14 @@ public class Player extends Spaceship {
 	public WebSocketSession getSession() {
 		return this.session;
 	}
+	
+	public String getNameRoom() {
+		return this.roomName;
+	}
+
+	public void setNameRoom(String roomName) {
+		this.roomName = roomName;
+	}
 
 	public void sendMessage(String msg) throws Exception {
 		this.session.sendMessage(new TextMessage(msg));

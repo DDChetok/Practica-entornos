@@ -4,6 +4,7 @@ public class SpaceObject {
 
 	private int collisionFactor;
 	private double posX, posY, velX, velY, facingAngle;
+	private boolean Pintado;
 
 	public double getPosX() {
 		return this.posX;
@@ -49,7 +50,16 @@ public class SpaceObject {
 		this.posX += this.velX;
 		this.posY += this.velY;
 	}
+	
 
+	public boolean getPintado() {
+		return this.Pintado;
+	}
+
+	public void setPintado(boolean Pintado) {
+		this.Pintado = Pintado;
+	}
+	
 	public int getCollisionFactor() {
 		return collisionFactor;
 	}

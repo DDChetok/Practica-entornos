@@ -112,37 +112,41 @@ window.onload = function() {
 						game.global.myPlayer.image.y = player.posY
 						game.global.myPlayer.image.angle = player.facingAngle
 					} else {
-						if (typeof game.global.otherPlayers[player.id] == 'undefined') {
-							game.global.otherPlayers[player.id] = {
-									image : game.add.sprite(player.posX, player.posY, 'spacewar', player.shipType)
+						if(game.global.myPlayer.room.name == player.nombre){
+							if (typeof game.global.otherPlayers[player.id] == 'undefined') {
+								game.global.otherPlayers[player.id] = {
+										image : game.add.sprite(player.posX, player.posY, 'spacewar', player.shipType)
+									}
+								game.global.otherPlayers[player.id].image.anchor.setTo(0.5, 0.5)
+							} else {
+								game.global.otherPlayers[player.id].image.x = player.posX
+								game.global.otherPlayers[player.id].image.y = player.posY
+								game.global.otherPlayers[player.id].image.angle = player.facingAngle
 							}
-							game.global.otherPlayers[player.id].image.anchor.setTo(0.5, 0.5)
-						} else {
-							game.global.otherPlayers[player.id].image.x = player.posX
-							game.global.otherPlayers[player.id].image.y = player.posY
-							game.global.otherPlayers[player.id].image.angle = player.facingAngle
-						}
+					}
 					}
 				}
 				
 				for (var projectile of msg.projectiles) {
-					if (projectile.isAlive) {
-						game.global.projectiles[projectile.id].image.x = projectile.posX
-						game.global.projectiles[projectile.id].image.y = projectile.posY
-						if (game.global.projectiles[projectile.id].image.visible === false) {
-							game.global.projectiles[projectile.id].image.angle = projectile.facingAngle
-							game.global.projectiles[projectile.id].image.visible = true
+					if(game.global.myPlayer.room.name == player.nombre){
+						if (projectile.isAlive) {
+							game.global.projectiles[projectile.id].image.x = projectile.posX
+							game.global.projectiles[projectile.id].image.y = projectile.posY
+							if (game.global.projectiles[projectile.id].image.visible === false) {
+								game.global.projectiles[projectile.id].image.angle = projectile.facingAngle
+								game.global.projectiles[projectile.id].image.visible = true
+							}
+						} else {
+							if (projectile.isHit) {
+								// we load explosion
+								let explosion = game.add.sprite(projectile.posX, projectile.posY, 'explosion')
+								explosion.animations.add('explosion')
+								explosion.anchor.setTo(0.5, 0.5)
+								explosion.scale.setTo(2, 2)
+								explosion.animations.play('explosion', 15, false, true)
+							}
+							game.global.projectiles[projectile.id].image.visible = false
 						}
-					} else {
-						if (projectile.isHit) {
-							// we load explosion
-							let explosion = game.add.sprite(projectile.posX, projectile.posY, 'explosion')
-							explosion.animations.add('explosion')
-							explosion.anchor.setTo(0.5, 0.5)
-							explosion.scale.setTo(2, 2)
-							explosion.animations.play('explosion', 15, false, true)
-						}
-						game.global.projectiles[projectile.id].image.visible = false
 					}
 				}
 			}
