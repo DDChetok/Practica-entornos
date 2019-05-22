@@ -28,6 +28,13 @@ Spacewar.lobbyState.prototype = {
 
 		//Mostrar HTML
 		this.showHTML();
+
+		//Botón ir atrás
+		var button = this.game.add.button(10, 10, 'backButton', this.goBack, this, 2, 1, 0);
+        button.width = 75;
+        button.height = 75;
+
+        //button.onInputOver.add(overButton, this);
 	},
 
 	update : function() {
@@ -46,6 +53,7 @@ Spacewar.lobbyState.prototype = {
 		game.global.socket.send(JSON.stringify(msg));
 
 	},
+	
 	enterPlayerName: function(){
 		var msg = {
 			event: "ADD_PLAYER_NAME_REQUEST",
@@ -58,5 +66,9 @@ Spacewar.lobbyState.prototype = {
 		document.getElementById("RoomGamemode").style.display = "block";
 		document.getElementById("RoomMaxPlayers").style.display = "block";
 		document.getElementById("RoomCreate").style.display = "block";
+	},
+
+	goBack:function(){
+		game.state.start('menuState');
 	}
 }

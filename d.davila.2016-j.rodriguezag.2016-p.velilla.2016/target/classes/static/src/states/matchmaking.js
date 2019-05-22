@@ -18,6 +18,9 @@ Spacewar.matchmakingState.prototype = {
 			sprite.scale.setTo(random, random)
 		}
 
+		//Crear texto
+		Spacewar.matchmakingState.textoNumJugadores = this.game.add.text(200,200 , "", { font: "80px Chakra Petch", fill: "#ffffff", align: "center" });
+
 		this.hideHTML();
 	},
 
@@ -28,7 +31,7 @@ Spacewar.matchmakingState.prototype = {
 	},
 
 	create : function() {
-
+		
 	},
 
 	update : function() {
@@ -46,6 +49,11 @@ Spacewar.matchmakingState.prototype = {
 
 		game.global.socket.send(JSON.stringify(msg));
 		console.log("MATCHMAKING");
+	},
+
+	updateText:function(numJugadores){
+		//Updatear texto
+		Spacewar.matchmakingState.textoNumJugadores.setText(numJugadores);
 	},
 
 	hideHTML: function(){

@@ -11,6 +11,7 @@ Spacewar.gameState.prototype = {
 		if (game.global.DEBUG_MODE) {
 			console.log("[DEBUG] Entering **GAME** state");
 		}
+		
 
 		this.hideHTML();
 	},

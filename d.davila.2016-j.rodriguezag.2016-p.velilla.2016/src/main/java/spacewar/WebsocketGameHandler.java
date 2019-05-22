@@ -41,7 +41,9 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 		msg.put("event", "JOIN");
 		msg.put("id", player.getPlayerId());
 		msg.put("shipType", player.getShipType());
+		player.lock.lock();
 		player.getSession().sendMessage(new TextMessage(msg.toString()));
+		player.lock.unlock();
 		
 		player.roomName = "MENU";
 		
@@ -91,16 +93,22 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					msg.put("existe", false);
 				}
 				msg.put("event", "JOIN_ROOM_REQUEST");
+				player.lock.lock();
 				player.getSession().sendMessage(new TextMessage(msg.toString()));
+				player.lock.unlock();
 				break;
 			case "CHECK_ESTADO":
 				String roomName = node.get("roomName").asText();
 				Room room_1 = game.roomMap.get(roomName);
 				int numJugadores = room_1.playersSet.size();
 				
+				
 				msg.put("event","CHECK_ESTADO");
 				msg.put("numJugadores",numJugadores);
+				msg.put("maxJugadores",room_1.getRoomMaxPlayers());
+				player.lock.lock();
 				player.getSession().sendMessage(new TextMessage(msg.toString()));
+				player.lock.unlock();
 				break;
 			case "CHAT":
 				//chat
@@ -130,12 +138,13 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					msg2.put("event", "REMOVE PLAYER");
 					msg2.put("id", player.getPlayerId());
 					
-					game.broadcast(msg2.toString());
-					
 					player.roomName = room.getRoomName();
 					
+					game.broadcast(msg2.toString());	
 				}
+				player.lock.lock();
 				player.getSession().sendMessage(new TextMessage(msg.toString()));
+				player.lock.unlock();
 				break;
 			case "ADD_PLAYER_NAME_REQUEST":
 				player.setPlayerName(node.get("playername").asText());
@@ -147,7 +156,9 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				msg.put("id", player.getPlayerId());
 				msg.put("shipType", player.getShipType());
 				msg.put("roomName", "MENU");
+				player.lock.lock();
 				player.getSession().sendMessage(new TextMessage(msg.toString()));
+				player.lock.unlock();
 				break;
 			case "UPDATE MOVEMENT":
 				player.loadMovement(node.path("movement").get("thrust").asBoolean(),

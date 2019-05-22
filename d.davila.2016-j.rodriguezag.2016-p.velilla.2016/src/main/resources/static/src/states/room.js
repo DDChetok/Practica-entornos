@@ -16,6 +16,11 @@ Spacewar.roomState.prototype = {
 
 	create : function() {
 		this.showHTML();
+
+		//Botón ir atrás
+		var button = this.game.add.button(10, 10, 'backButton', this.goBack, this, 2, 1, 0);
+        button.width = 75;
+        button.height = 75;
 	},
 
 	update : function() {
@@ -37,6 +42,10 @@ Spacewar.roomState.prototype = {
 	showHTML: function(){
 		document.getElementById("RoomNameSearch").style.display = "block";
 		document.getElementById("RoomJoin").style.display = "block";
+	},
+	
+	goBack:function(){
+		game.state.start('menuState');
 	}
 
 	

@@ -80,7 +80,9 @@ public class SpacewarGame {
 		for(Room room : roomMap.values()) {
 			for (Player player : room.playersSet.values()) {
 				try {
+					player.lock.lock();
 					player.getSession().sendMessage(new TextMessage(message.toString()));
+					player.lock.unlock();
 				} catch (Throwable ex) {
 					System.err.println("Execption sending message to player " + player.getSession().getId());
 					ex.printStackTrace(System.err);
