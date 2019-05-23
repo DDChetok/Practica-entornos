@@ -19,7 +19,8 @@ Spacewar.preloadState.prototype = {
 				Phaser.Loader.TEXTURE_ATLAS_JSON_HASH)
 
 		game.load.image('backButton', 'assets/images/backButton.png');
-
+		game.load.image('redHealthBar', 'assets/images/barra_vida_roja.png');
+		game.load.image('healthBar', 'assets/images/barra_vida.png');
 	},
 
 	create : function() {

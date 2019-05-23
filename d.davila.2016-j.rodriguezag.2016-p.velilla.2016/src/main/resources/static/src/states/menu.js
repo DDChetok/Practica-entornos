@@ -13,9 +13,18 @@ Spacewar.menuState.prototype = {
 			console.log("[DEBUG] Entering **MENU** state");
 		}
 		
-
+		this.initMyPlayer();
 		this.createGameState();
 		this.hideHTML();
+	},
+
+	
+	initMyPlayer: function(){
+		//Delete name text
+		delete game.global.myPlayer.textoNombre;
+		delete game.global.myPlayer.healthBar;
+		delete game.global.myPlayer.redHealthBar;
+
 	},
 
 	preload : function() {

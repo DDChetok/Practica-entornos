@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Implementation-Title: d.davila.2016-j.rodriguezag.2016-p.velilla.2016
 Implementation-Version: 0.0.1-SNAPSHOT
-Built-By: Pablo
+Built-By: Dani
 Implementation-Vendor-Id: es.urjc.em.practica_2018-19
-Build-Jdk: 1.8.0_192
+Build-Jdk: 1.8.0_211
 Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
  ot-starter-parent/d.davila.2016-j.rodriguezag.2016-p.velilla.2016
 Created-By: Maven Integration for Eclipse

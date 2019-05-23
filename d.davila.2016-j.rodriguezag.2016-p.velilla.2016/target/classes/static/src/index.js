@@ -10,7 +10,10 @@ window.onload = function() {
 		socket : null,
 		myPlayer : new Object(),
 		otherPlayers : [],
-		projectiles : []
+		projectiles : [],
+		maxAnchoBarraVida: 115,
+		maxAltoBarraVida: 10,
+		vidaMax: 100
 	}
 
 	// WEBSOCKET CONFIGURATOR
@@ -64,8 +67,6 @@ window.onload = function() {
 			//console.log(msg.numJugadores);
 			Spacewar.matchmakingState.prototype.updateText(msg.numJugadores);
 			if(msg.ready){
-				
-				
 				game.state.start('gameState');
 
 			}
@@ -112,44 +113,25 @@ window.onload = function() {
 				console.log('[DEBUG] GAME STATE UPDATE message recieved')
 				console.dir(msg)
 			}
-			
-			
 			if (typeof game.global.myPlayer.image !== 'undefined') {
 				for (var player of msg.players) {
-					if (game.global.myPlayer.id == player.id) {
-						game.global.myPlayer.vida = player.vida;
-						if (game.global.myPlayer.vida <= 0){
-							game.global.myPlayer.room.name = "MENU";
-			
-							var msg = {
-								event: "DESTRUIDO",
-								room: game.global.myPlayer.room.name
-							}
-							game.global.socket.send(JSON.stringify(msg))
-							game.state.start("menuState");
-						}
-						game.global.myPlayer.image.x = player.posX
-						game.global.myPlayer.image.y = player.posY
-						if (typeof game.global.myPlayer.textoNombre == 'undefined') {
-							game.global.myPlayer.textoNombre = game.add.text(game.global.myPlayer.image.x, game.global.myPlayer.image.y + 20, game.global.myPlayer.PlayerNombre, { font: "20px Chakra Petch", fill: "#0a2239", align: "center" })
-							game.global.myPlayer.textoNombre.anchor.setTo(0.5, 0.5)
+					if (game.global.myPlayer.id == player.id) { //MI JUGADOR
 
-							}else{
-								game.global.myPlayer.textoNombre.setText(player.PlayerNombre)
-								game.global.myPlayer.textoNombre.position.x = game.global.myPlayer.image.x;
-								game.global.myPlayer.textoNombre.position.y = game.global.myPlayer.image.y;
-							}
+						checkMuerte(game.global.myPlayer,player.vida)
+						actualizarPosicion(game.global.myPlayer,player);
+						crearTextoNombre(game.global.myPlayer);
+						crearBarraVida(game.global.myPlayer);
+
 						
-						game.global.myPlayer.image.angle = player.facingAngle						
-					} else {
-						if(game.global.myPlayer.room.name == player.nombre){
+					} else { //OTROS JUGADORES
+						if(game.global.myPlayer.room.name == player.nombre){ //Crear otros jugadores
 							if (typeof game.global.otherPlayers[player.id] == 'undefined') {
 								game.global.otherPlayers[player.id] = {
 										image : game.add.sprite(player.posX, player.posY, 'spacewar', player.shipType),
 										nombreJugador : game.add.text(player.posX, player.posY + 20, player.PlayerNombre, { font: "20px Chakra Petch", fill: "#0a2239", align: "center" })
 									}
 								game.global.otherPlayers[player.id].image.anchor.setTo(0.5, 0.5)
-							} else {
+							} else { //Actualizar otros jugadores
 								game.global.otherPlayers[player.id].image.alive = true;
 								game.global.otherPlayers[player.id].image.visible = true;
 								game.global.otherPlayers[player.id].image.x = player.posX
@@ -195,8 +177,10 @@ window.onload = function() {
 			}
 			if(msg.id !== game.global.myPlayer.id && typeof game.global.otherPlayers[msg.id] !== 'undefined'){
 				game.global.otherPlayers[msg.id].image.destroy()
+				game.global.otherPlayers[msg.id].nombreJugador.destroy()
 				delete game.global.otherPlayers[msg.id]
 			}
+			break;
 		default :
 			console.dir(msg)
 			break
@@ -216,4 +200,58 @@ window.onload = function() {
 	game.state.start('bootState')
 
 	
+}
+
+function checkMuerte(player,vida){
+	game.global.myPlayer.vida = vida;
+	if (player.vida <= 0){ //Si el jugador muere
+
+		player.room.name = "MENU";
+		
+		var msg = {
+			event: "DESTRUIDO",
+			room: player.room.name
+		}
+		game.global.socket.send(JSON.stringify(msg))
+		game.state.start("menuState");
+	}
+
+}
+
+function actualizarPosicion(player,playerDelServer){
+	player.image.x = playerDelServer.posX
+	player.image.y = playerDelServer.posY
+	player.image.angle = playerDelServer.facingAngle
+}
+
+function crearBarraVida(player){
+	if(typeof player.redHealthBar == 'undefined'){ //Crea si no existe
+		player.redHealthBar = game.add.image(player.image.x - 58, player.image.y - 60, 'redHealthBar');
+		player.redHealthBar.width = 115;
+		player.redHealthBar.height = 10;
+
+		player.healthBar = game.add.image(player.x - 58, player.y - 60, 'healthBar');					
+		player.healthBar.width = game.global.maxAnchoBarraVida;
+		player.healthBar.height = game.global.maxAltoBarraVida;	
+	}else{ //Actualiza si ya existe
+		Spacewar.gameState.prototype.updateHealthBar();
+
+		player.healthBar.x = player.image.x  - 58;
+		player.healthBar.y = player.image.y - 60;		
+
+		player.redHealthBar.x = player.image.x - 58;
+		player.redHealthBar.y = player.image.y - 60;
+	}
+}
+
+function crearTextoNombre(player){
+	if (typeof player.textoNombre == 'undefined') {
+		player.textoNombre = game.add.text(player.image.x, player.image.y + 20,player.PlayerNombre, { font: "20px Chakra Petch", fill: "#0a2239", align: "center" })
+		player.textoNombre.anchor.setTo(0.5, 0.5)
+
+	}else{
+		player.textoNombre.setText(player.PlayerNombre)
+		player.textoNombre.position.x = player.image.x;
+		player.textoNombre.position.y = player.image.y;
+	}
 }

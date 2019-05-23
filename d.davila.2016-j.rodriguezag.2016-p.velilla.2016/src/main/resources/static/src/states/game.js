@@ -14,9 +14,23 @@ Spacewar.gameState.prototype = {
 		for (i = 0;i < game.global.otherPlayers.length;i++){
 			delete game.global.otherPlayers[i];
 		}
-		delete game.global.myPlayer.textoNombre;
+		
+
+		this.initMyPlayer();
 
 		this.hideHTML();
+	},
+
+	initMyPlayer: function(){
+		//Delete name text
+		delete game.global.myPlayer.textoNombre;
+		delete game.global.myPlayer.healthBar;
+		delete game.global.myPlayer.redHealthBar;
+
+	},
+
+	updateHealthBar: function(){
+		game.global.myPlayer.healthBar.width = (game.global.maxAnchoBarraVida * game.global.myPlayer.vida) / game.global.vidaMax;
 	},
 
 	preload : function() {
