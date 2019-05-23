@@ -61,5 +61,10 @@ Spacewar.matchmakingState.prototype = {
 		document.getElementById("RoomGamemode").style.display = "none";
 		document.getElementById("RoomMaxPlayers").style.display = "none";
 		document.getElementById("RoomCreate").style.display = "none";
+	
+		document.getElementById("RoomNameSearch").style.display = "none";
+		document.getElementById("RoomJoin").style.display = "none";
 	}
+
+
 }

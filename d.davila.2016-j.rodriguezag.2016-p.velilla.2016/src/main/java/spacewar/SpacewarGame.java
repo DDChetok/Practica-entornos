@@ -10,6 +10,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.web.socket.TextMessage;
 
@@ -36,6 +38,7 @@ public class SpacewarGame {
 	
 	//Salas
 	public ConcurrentMap<String,Room> roomMap = new ConcurrentHashMap<>();
+	public Lock roomLock = new ReentrantLock();
 	
 	public SpacewarGame() {
 		Room menu = new Room("MENU","menu",50);
@@ -44,12 +47,14 @@ public class SpacewarGame {
 
 	public void addPlayer(Player player) {
 		//players.put(player.getSession().getId(), player);
+		roomLock.lock();
 		Room room = roomMap.get(player.roomName);
 		room.playersSet.put(player.getPlayerId(),player);
 		int count = room.numPlayers.getAndIncrement();
-		if (count == 0) {
+		if (count >= 0) {
 			this.startGameLoop();
 		}
+		roomLock.unlock();
 	}
 
 	public Collection<Player> getPlayers() {
@@ -57,12 +62,14 @@ public class SpacewarGame {
 	}
 
 	public void removePlayer(Player player) {
-		players.remove(player.getSession().getId());
-
+		roomLock.lock();
+		Room room = roomMap.get(player.roomName);
+		room.playersSet.remove(player.getPlayerId());
 		int count = this.numPlayers.decrementAndGet();
 		if (count == 0) {
 			this.stopGameLoop();
 		}
+		roomLock.unlock();
 	}
 
 	public void startGameLoop() {
