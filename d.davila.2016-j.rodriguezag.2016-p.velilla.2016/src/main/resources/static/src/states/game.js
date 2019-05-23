@@ -11,6 +11,10 @@ Spacewar.gameState.prototype = {
 		if (game.global.DEBUG_MODE) {
 			console.log("[DEBUG] Entering **GAME** state");
 		}
+		for (i = 0;i < game.global.otherPlayers.length;i++){
+			delete game.global.otherPlayers[i];
+		}
+		delete game.global.myPlayer.textoNombre;
 
 		this.hideHTML();
 	},

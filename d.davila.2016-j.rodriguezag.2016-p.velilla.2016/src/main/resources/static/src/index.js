@@ -62,9 +62,7 @@ window.onload = function() {
 			console.log(msg.numJugadores);
 			if(msg.numJugadores >= 1){
 				
-				for (i = 0;i < game.global.otherPlayers.length;i++){
-					delete game.global.otherPlayers[i];
-				}
+				
 				game.state.start('gameState');
 
 			}
@@ -95,12 +93,13 @@ window.onload = function() {
 			game.global.myPlayer.room = {
 				name : msg.roomName
 			}
-			game.global.myPlayer.PlayerNombre = document.getElementById("enterPlayerName").value
+			
 			
 			
 			if (game.global.DEBUG_MODE) {
 				console.log('[DEBUG] ID assigned to player: ' + game.global.myPlayer.id)
 			}
+
 			break
 
 		case 'GAME STATE UPDATE' :
@@ -113,13 +112,23 @@ window.onload = function() {
 					if (game.global.myPlayer.id == player.id) {
 						game.global.myPlayer.image.x = player.posX
 						game.global.myPlayer.image.y = player.posY
+						if (typeof game.global.myPlayer.textoNombre == 'undefined') {
+							game.global.myPlayer.textoNombre = game.add.text(game.global.myPlayer.image.x, game.global.myPlayer.image.y + 20, game.global.myPlayer.PlayerNombre, { font: "20px Chakra Petch", fill: "#0a2239", align: "center" })
+							game.global.myPlayer.textoNombre.anchor.setTo(0.5, 0.5)
+
+							}else{
+								game.global.myPlayer.textoNombre.setText(player.PlayerNombre)
+								game.global.myPlayer.textoNombre.position.x = game.global.myPlayer.image.x;
+								game.global.myPlayer.textoNombre.position.y = game.global.myPlayer.image.y;
+							}
+						
 						game.global.myPlayer.image.angle = player.facingAngle						
 					} else {
 						if(game.global.myPlayer.room.name == player.nombre){
 							if (typeof game.global.otherPlayers[player.id] == 'undefined') {
 								game.global.otherPlayers[player.id] = {
 										image : game.add.sprite(player.posX, player.posY, 'spacewar', player.shipType),
-										nombreJugador : game.add.text(player.posX, player.posY + 20, player.PlayerNombre, { font: "25px Chakra Petch", fill: "#0a2239", align: "center" })
+										nombreJugador : game.add.text(player.posX, player.posY + 20, player.PlayerNombre, { font: "20px Chakra Petch", fill: "#0a2239", align: "center" })
 									}
 								game.global.otherPlayers[player.id].image.anchor.setTo(0.5, 0.5)
 							} else {
@@ -128,6 +137,7 @@ window.onload = function() {
 								game.global.otherPlayers[player.id].image.angle = player.facingAngle
 
 								game.global.otherPlayers[player.id].nombreJugador.x = player.posX
+								game.global.otherPlayers[player.id].nombreJugador.setText(player.PlayerNombre)
 								game.global.otherPlayers[player.id].nombreJugador.y = player.posY+20
 							}
 						
