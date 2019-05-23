@@ -112,6 +112,20 @@
 		display: none;
 	}
 
+	input[id="startGame"] {
+		position: absolute;
+		z-index: 1000;
+		margin: 300px 600px;
+		width: 10%;
+		padding: 12px 12px;
+		display: inline-block;
+		border: 3px solid rgb(202, 148, 98);
+		border-radius: 4px;
+		box-sizing: border-box;
+		font-size: 150%;
+		display: none;
+	}
+
 </style>
 
 <head>
@@ -131,11 +145,15 @@
 <script src="src/states/matchmaking.js"></script>
 <script src="src/states/room.js"></script>
 <script src="src/states/game.js"></script>
+<script src="src/scoreboard.js"></script>
 <script src="src/index.js"></script>
+
 </head>
 
 <body>
 	<!-- div donde ubicaremos el juego -->
+	<!--BOTON DE COMENZAR PARTIDA-->
+	<input id="startGame" type="button" onclick = "Spacewar.matchmakingState.prototype.startGame()" value="Start game">
 	<!--BOTONES DE UNIRSE SALA-->
 	<input type="text" id="RoomNameSearch" placeholder="Name">
 	<input id="RoomJoin" type="button" onclick = "Spacewar.roomState.prototype.joinRoom()" value="Join the room">

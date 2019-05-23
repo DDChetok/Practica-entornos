@@ -40,8 +40,11 @@ public class SpacewarGame {
 	public ConcurrentMap<String,Room> roomMap = new ConcurrentHashMap<>();
 	public Lock roomLock = new ReentrantLock();
 	
+	//Lock del json del tick
+	public Lock tickLock = new ReentrantLock();
+	
 	public SpacewarGame() {
-		Room menu = new Room("MENU","menu",50);
+		Room menu = new Room("MENU","menu",50,-1);
 		roomMap.put(menu.getRoomName(), menu);
 	}
 
@@ -51,6 +54,7 @@ public class SpacewarGame {
 		Room room = roomMap.get(player.roomName);
 		room.playersSet.put(player.getPlayerId(),player);
 		int count = room.numPlayers.getAndIncrement();
+		player.setVida(100);
 		if (count >= 0) {
 			this.startGameLoop();
 		}
@@ -105,8 +109,9 @@ public class SpacewarGame {
 		long thisInstant = System.currentTimeMillis();
 		Set<Integer> bullets2Remove = new HashSet<>();
 		boolean removeBullets = false;
-
+		
 		try {
+			tickLock.lock();
 			for(Room room : roomMap.values()) {
 				ObjectNode json = mapper.createObjectNode();
 				ArrayNode arrayNodePlayers = mapper.createArrayNode();
@@ -139,10 +144,6 @@ public class SpacewarGame {
 							projectile.setHit(true);
 							player.setVida(player.getVida()-20);
 							projectile.getOwner().setPuntuacion(projectile.getOwner().getPuntuacion()+50);
-							if(player.getVida() <= 0) {
-								room.playersSet.remove(player.getPlayerId());
-								player.roomName = "MENU";
-							}
 							break;
 						}
 					}
@@ -172,7 +173,6 @@ public class SpacewarGame {
 				if (removeBullets)
 					room.projectiles.keySet().removeAll(bullets2Remove);
 	
-				
 				json.put("event", "GAME STATE UPDATE");
 				json.putPOJO("players", arrayNodePlayers);
 				json.putPOJO("projectiles", arrayNodeProjectiles);
@@ -181,7 +181,9 @@ public class SpacewarGame {
 				
 				
 			}
-		} catch (Throwable ex) {
+			tickLock.unlock();
+			
+		}catch (Throwable ex) {
 
 		}
 	}

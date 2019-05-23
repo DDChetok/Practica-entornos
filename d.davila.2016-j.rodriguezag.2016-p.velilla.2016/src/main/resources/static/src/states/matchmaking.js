@@ -48,12 +48,21 @@ Spacewar.matchmakingState.prototype = {
 		}
 
 		game.global.socket.send(JSON.stringify(msg));
-		console.log("MATCHMAKING");
+		//console.log("MATCHMAKING");
 	},
 
 	updateText:function(numJugadores){
 		//Updatear texto
 		Spacewar.matchmakingState.textoNumJugadores.setText(numJugadores);
+	},
+
+	startGame:function(){
+		//game.state.start('gameState');
+		var msg={
+			event : "ROOM_READY",
+			ready : true
+		}
+		game.global.socket.send(JSON.stringify(msg));
 	},
 
 	hideHTML: function(){
@@ -64,6 +73,11 @@ Spacewar.matchmakingState.prototype = {
 	
 		document.getElementById("RoomNameSearch").style.display = "none";
 		document.getElementById("RoomJoin").style.display = "none";
+
+		if(game.global.myPlayer.room.idHost == game.global.myPlayer.id){
+			document.getElementById("startGame").style.display = "block";
+		}
+		
 	}
 
 

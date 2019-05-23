@@ -16,14 +16,19 @@ public class Room {
 	private int roomMaxPlayers;
 	public ConcurrentMap<Integer,Player> playersSet; //Hemos usado un concurrent map como un conjunto concurrente
 	public Map<Integer, Projectile> projectiles = new ConcurrentHashMap<>();
+	//public ConcurrentMap<Integer,Player> playersSet;
 	public AtomicInteger numPlayers = new AtomicInteger();
+	public int idHost;
+	public boolean ready;
 	
-	public Room(String roomName, String roomGamemode, int roomMaxPlayers) {
+	public Room(String roomName, String roomGamemode, int roomMaxPlayers,int idHost) {
 		super();
 		this.roomName = roomName;
 		this.roomGamemode = roomGamemode;
 		this.roomMaxPlayers = roomMaxPlayers;
 		this.playersSet = new ConcurrentHashMap<Integer,Player>();
+		this.idHost = idHost;
+		this.ready = false;
 	}
 
 	@Override

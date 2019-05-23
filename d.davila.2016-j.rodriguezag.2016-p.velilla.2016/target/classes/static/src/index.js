@@ -51,18 +51,19 @@ window.onload = function() {
 			if(msg.existe){
 				console.log("Te has unido a la sala");
 				game.global.myPlayer.room = {
-					name : msg.roomName
+					name : msg.roomName,
+					idHost: msg.idHost
 				}
 				game.global.myPlayer.vida = msg.vida
 				game.state.start('matchmakingState');
 			}else{
-				console.log("No existe ninguna sala con ese nombre");
+				console.log("No existe ninguna sala con ese nombre o la partida ya ha comenzado, gl in esports :(");
 			}
 			break;
 		case 'CHECK_ESTADO':
-			console.log(msg.numJugadores);
+			//console.log(msg.numJugadores);
 			Spacewar.matchmakingState.prototype.updateText(msg.numJugadores);
-			if(msg.numJugadores >= msg.maxJugadores){
+			if(msg.ready){
 				
 				/*for (i = 0;i < game.global.otherPlayers.length;i++){
 					delete game.global.otherPlayers[i];
@@ -79,7 +80,8 @@ window.onload = function() {
 			if(msg.salaCreada){
 				console.log("Se ha creado la sala " + msg.roomName + " para jugar " + msg.roomGamemode );
 				game.global.myPlayer.room = {
-					name : msg.roomName
+					name : msg.roomName,
+					idHost : msg.idHost
 				}
 				game.state.start('matchmakingState');
 			}else{
@@ -95,7 +97,8 @@ window.onload = function() {
 			game.global.myPlayer.id = msg.id
 			game.global.myPlayer.shipType = msg.shipType
 			game.global.myPlayer.room = {
-				name : msg.roomName
+				name : msg.roomName,
+				idHost: msg.idHost
 			}
 			game.global.myPlayer.PlayerNombre = document.getElementById("enterPlayerName").value
 			
@@ -111,15 +114,21 @@ window.onload = function() {
 				console.dir(msg)
 			}
 			
-			if (game.global.myPlayer.vida <= 0){
-				game.global.myPlayer.room.name = "MENU";
-				game.state.start("menuState");
-			}
 			
 			if (typeof game.global.myPlayer.image !== 'undefined') {
 				for (var player of msg.players) {
 					if (game.global.myPlayer.id == player.id) {
 						game.global.myPlayer.vida = player.vida;
+						if (game.global.myPlayer.vida <= 0){
+							game.global.myPlayer.room.name = "MENU";
+			
+							var msg = {
+								event: "DESTRUIDO",
+								room: game.global.myPlayer.room.name
+							}
+							game.global.socket.send(JSON.stringify(msg))
+							game.state.start("menuState");
+						}
 						game.global.myPlayer.image.x = player.posX
 						game.global.myPlayer.image.y = player.posY
 						game.global.myPlayer.image.angle = player.facingAngle						
@@ -171,9 +180,9 @@ window.onload = function() {
 				console.log('[DEBUG] REMOVE PLAYER message recieved')
 				console.dir(msg.players)
 			}
-			if(msg.id !== game.global.myPlayer.id){
-				//game.global.otherPlayers[msg.id].image.destroy()
-				//delete game.global.otherPlayers[msg.id]
+			if(msg.id !== game.global.myPlayer.id && typeof game.global.otherPlayers[msg.id] !== 'undefined'){
+				game.global.otherPlayers[msg.id].image.destroy()
+				delete game.global.otherPlayers[msg.id]
 			}
 		default :
 			console.dir(msg)

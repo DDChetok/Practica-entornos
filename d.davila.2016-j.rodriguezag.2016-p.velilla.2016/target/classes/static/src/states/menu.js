@@ -236,6 +236,8 @@ Spacewar.menuState.prototype = {
 
 		document.getElementById("RoomNameSearch").style.display = "none";
 		document.getElementById("RoomJoin").style.display = "none";
+
+		document.getElementById("startGame").style.display = "none";
 	}
 
 }
