@@ -61,11 +61,12 @@ window.onload = function() {
 			break;
 		case 'CHECK_ESTADO':
 			console.log(msg.numJugadores);
-			if(msg.numJugadores >= 1){
+			Spacewar.matchmakingState.prototype.updateText(msg.numJugadores);
+			if(msg.numJugadores >= msg.maxJugadores){
 				
-				for (i = 0;i < game.global.otherPlayers.length;i++){
+				/*for (i = 0;i < game.global.otherPlayers.length;i++){
 					delete game.global.otherPlayers[i];
-				}
+				}*/
 				game.state.start('gameState');
 
 			}
@@ -130,9 +131,12 @@ window.onload = function() {
 									}
 								game.global.otherPlayers[player.id].image.anchor.setTo(0.5, 0.5)
 							} else {
+								game.global.otherPlayers[player.id].image.alive = true;
+								game.global.otherPlayers[player.id].image.visible = true;
 								game.global.otherPlayers[player.id].image.x = player.posX
 								game.global.otherPlayers[player.id].image.y = player.posY
 								game.global.otherPlayers[player.id].image.angle = player.facingAngle
+								//game.global.otherPlayers[player.id].image.destroy();
 							}
 						
 					}
@@ -168,8 +172,8 @@ window.onload = function() {
 				console.dir(msg.players)
 			}
 			if(msg.id !== game.global.myPlayer.id){
-				game.global.otherPlayers[msg.id].image.destroy()
-				delete game.global.otherPlayers[msg.id]
+				//game.global.otherPlayers[msg.id].image.destroy()
+				//delete game.global.otherPlayers[msg.id]
 			}
 		default :
 			console.dir(msg)

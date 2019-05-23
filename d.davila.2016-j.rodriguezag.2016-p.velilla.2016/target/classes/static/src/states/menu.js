@@ -31,6 +31,7 @@ Spacewar.menuState.prototype = {
 			event : 'JOIN'
 		}
 		game.global.socket.send(JSON.stringify(message))
+
 		//Cargar botones de naves madre
 		this.motherShips[0] = game.add.sprite(0, 0, 'spacewar','large_orange.png');
 		this.motherShips[0].id = 0;
@@ -71,6 +72,7 @@ Spacewar.menuState.prototype = {
 		this.shots = [];
 		this.actualShot = 0;
 
+
 	},
 
 	update : function() {
@@ -106,7 +108,7 @@ Spacewar.menuState.prototype = {
 			this.shots[this.actualShot].rotation = this.game.physics.arcade.angleBetween(game.global.myPlayer.image, this.shots[this.actualShot]);	
 			
 			this.shots[this.actualShot].reset(x, y);
-			this.shots[this.actualShot].body.velocity.setToPolar(game.global.myPlayer.image.rotation,250);
+			this.shots[this.actualShot].body.velocity.setToPolar(game.global.myPlayer.image.rotation,450);
 			//this.game.physics.arcade.moveToPointer(this.shots[this.actualShot], 100);
 
 		}
@@ -226,6 +228,14 @@ Spacewar.menuState.prototype = {
 	hideHTML: function(){
 		document.getElementById("enterPlayerName").style.display = "none";
 		document.getElementById("confirmPlayerName").style.display = "none";
+		
+		document.getElementById("RoomName").style.display = "none";
+		document.getElementById("RoomGamemode").style.display = "none";
+		document.getElementById("RoomMaxPlayers").style.display = "none";
+		document.getElementById("RoomCreate").style.display = "none";
+
+		document.getElementById("RoomNameSearch").style.display = "none";
+		document.getElementById("RoomJoin").style.display = "none";
 	}
 
 }
