@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class WebsocketGameHandler extends TextWebSocketHandler {
@@ -80,14 +81,43 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 			Player player = (Player) session.getAttributes().get(PLAYER_ATTRIBUTE);
 
 			switch (node.get("event").asText()) {
-			
+			case "RESET_SCORE":
+				player.lock.lock();
+					
+				player.puntuacion=0;
+				
+				player.lock.unlock();
+				break;
+			case "ACABADA":
+				game.roomMap.remove(player.getNameRoom());
+				
+				//player.puntuacion=0;
+				
+				player.setNameRoom("MENU");
+				game.addPlayer(player);
+				break;
 			case "DESTRUIDO":
 				player.lock.lock();
 				game.removePlayer(player);
+				//player.puntuacion=0;
 				player.roomName = node.get("room").asText();
 				game.addPlayer(player);
 				msg.put("event", "REMOVE PLAYER");
 				msg.put("id", player.getPlayerId());
+				ArrayNode arrayPuntuaciones = mapper.createArrayNode();
+				
+				for(Player puntuacion : game.roomMap.get(player.getNameRoom()).puntuacionSet.values()) {
+					
+					ObjectNode jsonPuntuacion = mapper.createObjectNode();
+					jsonPuntuacion.put("id", puntuacion.getPlayerId());
+					jsonPuntuacion.put("nombre", puntuacion.getPlayerName());
+					jsonPuntuacion.put("score", puntuacion.puntuacion);
+					
+					arrayPuntuaciones.addPOJO(jsonPuntuacion);
+				}
+				msg.putPOJO("score", arrayPuntuaciones);
+				
+				
 				game.broadcast(msg.toString());
 				player.lock.unlock();
 				break;
@@ -126,6 +156,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				}
 				player.lock.unlock();
 				break;
+				
 			case "CHECK_ESTADO":
 				game.roomLock.lock();
 				String roomName = node.get("roomName").asText();
@@ -161,19 +192,6 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				msg.put("roomName",room1.getRoomName());
 				msg.put("roomGamemode",room1.getRoomGamemode());
 				msg.put("roomMaxPlayers",room1.getRoomMaxPlayers());
-				
-				/*switch(room.getRoomGamemode()){
-					case "classic":
-						for(Player jugador : game.getPlayers()){
-							jugador.vida = 100;
-						}
-						break;
-					case "battle royale":
-						for(Player jugador : game.getPlayers()){
-							jugador.vida = 100;
-						}
-						break;
-				}*/
 				
 				
 				if(room2 != null && room1.areEquals(room2)) { //Si son iguales, no se inserta

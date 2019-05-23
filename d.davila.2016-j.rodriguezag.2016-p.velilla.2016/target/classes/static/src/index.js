@@ -55,7 +55,8 @@ window.onload = function() {
 				console.log("Te has unido a la sala");
 				game.global.myPlayer.room = {
 					name : msg.roomName,
-					idHost: msg.idHost
+					idHost: msg.idHost,
+					score: []
 				}
 				game.global.myPlayer.vida = msg.vida
 				game.state.start('matchmakingState');
@@ -80,7 +81,8 @@ window.onload = function() {
 				console.log("Se ha creado la sala " + msg.roomName + " para jugar " + msg.roomGamemode );
 				game.global.myPlayer.room = {
 					name : msg.roomName,
-					idHost : msg.idHost
+					idHost : msg.idHost,
+					score: []
 				}
 				game.state.start('matchmakingState');
 			}else{
@@ -113,6 +115,18 @@ window.onload = function() {
 				console.log('[DEBUG] GAME STATE UPDATE message recieved')
 				console.dir(msg)
 			}
+
+			if(msg.acabada == true && game.global.myPlayer.room.name != 'MENU'){
+				var mess = {
+						event: "ACABADA"
+				}
+				game.global.myPlayer.room.score = msg.puntuaciones;
+				
+				game.state.start("scoreboardState");
+				
+				game.global.socket.send(JSON.stringify(mess));
+			}
+			
 			if (typeof game.global.myPlayer.image !== 'undefined') {
 				for (var player of msg.players) {
 					if (game.global.myPlayer.id == player.id) { //MI JUGADOR
@@ -180,6 +194,8 @@ window.onload = function() {
 				game.global.otherPlayers[msg.id].nombreJugador.destroy()
 				delete game.global.otherPlayers[msg.id]
 			}
+			
+			game.global.myPlayer.room.score = msg.score;
 			break;
 		default :
 			console.dir(msg)
@@ -196,9 +212,10 @@ window.onload = function() {
 	game.state.add('roomState', Spacewar.roomState)
 	game.state.add('gameState', Spacewar.gameState)
 	game.state.add('loginState', Spacewar.loginState)
+	game.state.add('scoreboardState', Spacewar.scoreboardState)
 
 	game.state.start('bootState')
-
+	
 	
 }
 
@@ -213,7 +230,7 @@ function checkMuerte(player,vida){
 			room: player.room.name
 		}
 		game.global.socket.send(JSON.stringify(msg))
-		game.state.start("menuState");
+		game.state.start("scoreboardState");
 	}
 
 }

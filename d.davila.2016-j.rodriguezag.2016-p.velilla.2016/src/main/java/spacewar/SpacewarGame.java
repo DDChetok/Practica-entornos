@@ -33,8 +33,7 @@ public class SpacewarGame {
 
 	// GLOBAL GAME ROOM
 	private Map<String, Player> players = new ConcurrentHashMap<>();
-	private Map<Integer, Projectile> projectiles = new ConcurrentHashMap<>();
-	private AtomicInteger numPlayers = new AtomicInteger();
+	//private Map<Integer, Projectile> projectiles = new ConcurrentHashMap<>();
 	
 	//Salas
 	public ConcurrentMap<String,Room> roomMap = new ConcurrentHashMap<>();
@@ -53,6 +52,7 @@ public class SpacewarGame {
 		roomLock.lock();
 		Room room = roomMap.get(player.roomName);
 		room.playersSet.put(player.getPlayerId(),player);
+		room.puntuacionSet.put(player.getPlayerId(),player);
 		int count = room.numPlayers.getAndIncrement();
 		player.setVida(100);
 		if (count >= 0) {
@@ -69,7 +69,7 @@ public class SpacewarGame {
 		roomLock.lock();
 		Room room = roomMap.get(player.roomName);
 		room.playersSet.remove(player.getPlayerId());
-		int count = this.numPlayers.decrementAndGet();
+		int count = room.numPlayers.decrementAndGet();
 		if (count == 0) {
 			this.stopGameLoop();
 		}
@@ -116,6 +116,7 @@ public class SpacewarGame {
 				ObjectNode json = mapper.createObjectNode();
 				ArrayNode arrayNodePlayers = mapper.createArrayNode();
 				ArrayNode arrayNodeProjectiles = mapper.createArrayNode();
+				ArrayNode arrayNodePuntuaciones = mapper.createArrayNode();
 				// Update players
 				for (Player player : room.playersSet.values()) {
 					player.calculateMovement();
@@ -169,14 +170,29 @@ public class SpacewarGame {
 					}
 					arrayNodeProjectiles.addPOJO(jsonProjectile);
 				}
+				
+				for(Player puntuacion : room.puntuacionSet.values()) {
+					
+					ObjectNode jsonPuntuacion = mapper.createObjectNode();
+					jsonPuntuacion.put("id", puntuacion.getPlayerId());
+					jsonPuntuacion.put("nombre", puntuacion.getPlayerName());
+					jsonPuntuacion.put("score", puntuacion.puntuacion);
+					
+					arrayNodePuntuaciones.addPOJO(jsonPuntuacion);
+				}
 	
 				if (removeBullets)
 					room.projectiles.keySet().removeAll(bullets2Remove);
 	
+				if(room.numPlayers.get() <= 1 && room.getRoomName() != "MENU" && room.puntuacionSet.size()>=2) {
+					room.acabada = true;
+				}
+				json.put("acabada", room.acabada);
 				json.put("event", "GAME STATE UPDATE");
 				json.putPOJO("players", arrayNodePlayers);
 				json.putPOJO("projectiles", arrayNodeProjectiles);
-	
+				json.putPOJO("puntuaciones", arrayNodePuntuaciones);
+				
 				this.broadcast(json.toString());
 				
 				

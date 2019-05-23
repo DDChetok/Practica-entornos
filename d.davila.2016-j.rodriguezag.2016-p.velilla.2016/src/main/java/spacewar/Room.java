@@ -20,6 +20,8 @@ public class Room {
 	public AtomicInteger numPlayers = new AtomicInteger();
 	public int idHost;
 	public boolean ready;
+	public boolean acabada;
+	public ConcurrentMap<Integer,Player> puntuacionSet;
 	
 	public Room(String roomName, String roomGamemode, int roomMaxPlayers,int idHost) {
 		super();
@@ -29,6 +31,8 @@ public class Room {
 		this.playersSet = new ConcurrentHashMap<Integer,Player>();
 		this.idHost = idHost;
 		this.ready = false;
+		this.acabada = false;
+		this.puntuacionSet = new ConcurrentHashMap<Integer,Player>();
 	}
 
 	@Override

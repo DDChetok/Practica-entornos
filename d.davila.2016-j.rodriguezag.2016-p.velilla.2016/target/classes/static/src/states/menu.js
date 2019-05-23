@@ -13,6 +13,11 @@ Spacewar.menuState.prototype = {
 			console.log("[DEBUG] Entering **MENU** state");
 		}
 		
+		for (i = 0;i < game.global.otherPlayers.length;i++){
+			delete game.global.otherPlayers[i];
+		}
+		
+
 		this.initMyPlayer();
 		this.createGameState();
 		this.hideHTML();
