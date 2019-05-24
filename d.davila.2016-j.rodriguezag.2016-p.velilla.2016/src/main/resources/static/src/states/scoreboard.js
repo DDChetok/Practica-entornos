@@ -34,6 +34,7 @@ Spacewar.scoreboardState.prototype = {
 		var msg ={
 				event: "RESET_SCORE"
 		}
+		game.global.socket.send(JSON.stringify(msg))
 		game.state.start('menuState');
 	},
 

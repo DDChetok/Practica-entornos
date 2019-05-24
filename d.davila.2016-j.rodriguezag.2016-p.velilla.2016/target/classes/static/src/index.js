@@ -13,6 +13,8 @@ window.onload = function() {
 		projectiles : [],
 		maxAnchoBarraVida: 115,
 		maxAltoBarraVida: 10,
+		maxAnchoBarraVidaOtherPlayer: 70,
+		maxAltoBarraVidaOtherPlayer: 5,
 		vidaMax: 100
 	}
 
@@ -116,16 +118,7 @@ window.onload = function() {
 				console.dir(msg)
 			}
 
-			if(msg.acabada == true && game.global.myPlayer.room.name != 'MENU'){
-				var mess = {
-						event: "ACABADA"
-				}
-				game.global.myPlayer.room.score = msg.puntuaciones;
-				
-				game.state.start("scoreboardState");
-				
-				game.global.socket.send(JSON.stringify(mess));
-			}
+			
 			
 			if (typeof game.global.myPlayer.image !== 'undefined') {
 				for (var player of msg.players) {
@@ -139,22 +132,26 @@ window.onload = function() {
 						
 					} else { //OTROS JUGADORES
 						if(game.global.myPlayer.room.name == player.nombre){ //Crear otros jugadores
+
+							
 							if (typeof game.global.otherPlayers[player.id] == 'undefined') {
 								game.global.otherPlayers[player.id] = {
 										image : game.add.sprite(player.posX, player.posY, 'spacewar', player.shipType),
-										nombreJugador : game.add.text(player.posX, player.posY + 20, player.PlayerNombre, { font: "20px Chakra Petch", fill: "#0a2239", align: "center" })
+										//textoNombre : game.add.text(player.posX, player.posY + 20, player.PlayerNombre, { font: "20px Chakra Petch", fill: "#ffffff", align: "center" }),
 									}
 								game.global.otherPlayers[player.id].image.anchor.setTo(0.5, 0.5)
+								
 							} else { //Actualizar otros jugadores
+								
+								crearBarraVidaOtherPlayer(game.global.otherPlayers[player.id]);
+								game.global.otherPlayers[player.id].vida = player.vida;
 								game.global.otherPlayers[player.id].image.alive = true;
 								game.global.otherPlayers[player.id].image.visible = true;
 								game.global.otherPlayers[player.id].image.x = player.posX
 								game.global.otherPlayers[player.id].image.y = player.posY
 								game.global.otherPlayers[player.id].image.angle = player.facingAngle
 
-								game.global.otherPlayers[player.id].nombreJugador.x = player.posX
-								game.global.otherPlayers[player.id].nombreJugador.setText(player.PlayerNombre)
-								game.global.otherPlayers[player.id].nombreJugador.y = player.posY+20
+								crearTextoNombreOtherPlayers(game.global.otherPlayers[player.id],player.PlayerNombre)
 							}
 						
 					}
@@ -183,6 +180,18 @@ window.onload = function() {
 						}
 				}
 			}
+
+			if(msg.acabada == true && game.global.myPlayer.room.name != 'MENU' && msg.room == game.global.myPlayer.room.name){
+				var mess = {
+						event: "ACABADA"
+				}
+				game.global.myPlayer.room.score = msg.puntuaciones;
+
+				game.global.socket.send(JSON.stringify(mess));
+				game.state.start("scoreboardState");
+				
+				
+			}
 			break
 		case 'REMOVE PLAYER' :
 			if (game.global.DEBUG_MODE) {
@@ -191,7 +200,9 @@ window.onload = function() {
 			}
 			if(msg.id !== game.global.myPlayer.id && typeof game.global.otherPlayers[msg.id] !== 'undefined'){
 				game.global.otherPlayers[msg.id].image.destroy()
-				game.global.otherPlayers[msg.id].nombreJugador.destroy()
+				game.global.otherPlayers[msg.id].textoNombre.destroy()
+				game.global.otherPlayers[msg.id].healthBar.destroy();
+				game.global.otherPlayers[msg.id].redHealthBar.destroy();
 				delete game.global.otherPlayers[msg.id]
 			}
 			
@@ -241,17 +252,37 @@ function actualizarPosicion(player,playerDelServer){
 	player.image.angle = playerDelServer.facingAngle
 }
 
+function crearBarraVidaOtherPlayer(player){
+	if(typeof player.redHealthBar == 'undefined'){ //Crea si no existe
+		player.redHealthBar = game.add.image(player.image.x - 35, player.image.y - 45, 'redHealthBar');
+		player.redHealthBar.width = game.global.maxAnchoBarraVidaOtherPlayer;
+		player.redHealthBar.height = game.global.maxAltoBarraVidaOtherPlayer;
+
+		player.healthBar = game.add.image(player.x - 35, player.y - 45, 'healthBar');					
+		player.healthBar.width = game.global.maxAnchoBarraVidaOtherPlayer;
+		player.healthBar.height = game.global.maxAltoBarraVidaOtherPlayer;	
+	}else{ //Actualiza si ya existe
+		Spacewar.gameState.prototype.updateHealthBarOtherPlayer(player);
+
+		player.healthBar.x = player.image.x  -  35;
+		player.healthBar.y = player.image.y - 45;		
+
+		player.redHealthBar.x = player.image.x -  35;
+		player.redHealthBar.y = player.image.y - 45;
+	}
+}
+
 function crearBarraVida(player){
 	if(typeof player.redHealthBar == 'undefined'){ //Crea si no existe
 		player.redHealthBar = game.add.image(player.image.x - 58, player.image.y - 60, 'redHealthBar');
-		player.redHealthBar.width = 115;
-		player.redHealthBar.height = 10;
+		player.redHealthBar.width = game.global.maxAnchoBarraVida;
+		player.redHealthBar.height = game.global.maxAltoBarraVida;
 
 		player.healthBar = game.add.image(player.x - 58, player.y - 60, 'healthBar');					
 		player.healthBar.width = game.global.maxAnchoBarraVida;
 		player.healthBar.height = game.global.maxAltoBarraVida;	
 	}else{ //Actualiza si ya existe
-		Spacewar.gameState.prototype.updateHealthBar();
+		Spacewar.gameState.prototype.updateHealthBar(player);
 
 		player.healthBar.x = player.image.x  - 58;
 		player.healthBar.y = player.image.y - 60;		
@@ -261,14 +292,25 @@ function crearBarraVida(player){
 	}
 }
 
+function crearTextoNombreOtherPlayers(player,nombre){
+	if (typeof player.textoNombre == 'undefined') {
+		player.textoNombre = game.add.text(player.image.x, player.image.y + 20,nombre, { font: "20px Chakra Petch", fill: "#ffffff", align: "center" })
+		player.textoNombre.anchor.setTo(0.5, 0.5)
+	}else{
+		player.textoNombre.setText(nombre)
+		player.textoNombre.position.x = player.image.x;
+		player.textoNombre.position.y = player.image.y + 35;
+	}
+}
+
 function crearTextoNombre(player){
 	if (typeof player.textoNombre == 'undefined') {
-		player.textoNombre = game.add.text(player.image.x, player.image.y + 20,player.PlayerNombre, { font: "20px Chakra Petch", fill: "#0a2239", align: "center" })
+		player.textoNombre = game.add.text(player.image.x, player.image.y + 20,player.PlayerNombre, { font: "20px Chakra Petch", fill: "#ffffff", align: "center" })
 		player.textoNombre.anchor.setTo(0.5, 0.5)
 
 	}else{
 		player.textoNombre.setText(player.PlayerNombre)
 		player.textoNombre.position.x = player.image.x;
-		player.textoNombre.position.y = player.image.y;
+		player.textoNombre.position.y = player.image.y - 33;
 	}
 }

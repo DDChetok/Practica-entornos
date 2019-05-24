@@ -187,6 +187,7 @@ public class SpacewarGame {
 				if(room.numPlayers.get() <= 1 && room.getRoomName() != "MENU" && room.puntuacionSet.size()>=2) {
 					room.acabada = true;
 				}
+				json.put("room",room.getRoomName());
 				json.put("acabada", room.acabada);
 				json.put("event", "GAME STATE UPDATE");
 				json.putPOJO("players", arrayNodePlayers);

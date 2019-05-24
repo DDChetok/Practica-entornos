@@ -56,15 +56,17 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		Player player = (Player) session.getAttributes().get(PLAYER_ATTRIBUTE);
+		player.lock.lock();
 		sessions.remove(session.getId());
-		game.roomMap.get(player.roomName).playersSet.remove(player.getPlayerId());
-		
-		//game.removePlayer(player);
+		//game.roomMap.get(player.roomName).playersSet.remove(player.getPlayerId());
+		game.removePlayer(player);
 
 		ObjectNode msg = mapper.createObjectNode();
 		msg.put("event", "REMOVE PLAYER");
 		msg.put("id", player.getPlayerId());
+		player.lock.unlock();
 		game.broadcast(msg.toString());
+		
 	}
 	
 	static class ChatMessage {
@@ -89,19 +91,21 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				player.lock.unlock();
 				break;
 			case "ACABADA":
-				game.roomMap.remove(player.getNameRoom());
-				
-				player.puntuacion=0;
-				
-				player.setNameRoom("MENU");
-				game.addPlayer(player);
+				player.lock.lock();
+				if(player.getNameRoom() != "MENU") {
+					game.roomMap.remove(player.getNameRoom());
+					
+					//player.puntuacion=0;
+					
+					player.setNameRoom("MENU");
+					
+					game.addPlayer(player);
+				}
+				player.lock.unlock();
 				break;
 			case "DESTRUIDO":
 				player.lock.lock();
-				game.removePlayer(player);
-				player.puntuacion=0;
-				player.roomName = node.get("room").asText();
-				game.addPlayer(player);
+				//player.puntuacion=0;
 				msg.put("event", "REMOVE PLAYER");
 				msg.put("id", player.getPlayerId());
 				ArrayNode arrayPuntuaciones = mapper.createArrayNode();
@@ -117,7 +121,9 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				}
 				msg.putPOJO("score", arrayPuntuaciones);
 				
-				
+				game.removePlayer(player);
+				player.roomName = node.get("room").asText();
+				game.addPlayer(player);
 				game.broadcast(msg.toString());
 				player.lock.unlock();
 				break;

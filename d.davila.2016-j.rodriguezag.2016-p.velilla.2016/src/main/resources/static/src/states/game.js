@@ -12,6 +12,8 @@ Spacewar.gameState.prototype = {
 			console.log("[DEBUG] Entering **GAME** state");
 		}
 		for (i = 0;i < game.global.otherPlayers.length;i++){
+			//delete game.global.otherPlayers[i].healthBar;
+			//delete game.global.otherPlayers[i].redHealthBar;
 			delete game.global.otherPlayers[i];
 		}
 		
@@ -29,8 +31,12 @@ Spacewar.gameState.prototype = {
 
 	},
 
-	updateHealthBar: function(){
-		game.global.myPlayer.healthBar.width = (game.global.maxAnchoBarraVida * game.global.myPlayer.vida) / game.global.vidaMax;
+	updateHealthBarOtherPlayer: function(player){
+		player.healthBar.width = (game.global.maxAnchoBarraVidaOtherPlayer * player.vida) / game.global.vidaMax;
+	},
+
+	updateHealthBar: function(player){
+		player.healthBar.width = (game.global.maxAnchoBarraVida * player.vida) / game.global.vidaMax;
 	},
 
 	preload : function() {

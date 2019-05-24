@@ -14,10 +14,12 @@ Spacewar.menuState.prototype = {
 		}
 		
 		for (i = 0;i < game.global.otherPlayers.length;i++){
+			//delete game.global.otherPlayers[i].healthBar;
+			//delete game.global.otherPlayers[i].redHealthBar;
 			delete game.global.otherPlayers[i];
+			
 		}
-		
-
+	
 		this.initMyPlayer();
 		this.createGameState();
 		this.hideHTML();
@@ -79,9 +81,9 @@ Spacewar.menuState.prototype = {
 		}
 
 		//Textos 
-		this.createRoomText = this.game.add.text(5, 110, "CREATE ROOM", { font: "25px Chakra Petch", fill: "#0a2239", align: "center" });
-		this.createRoomText = this.game.add.text(860, 110, "JOIN ROOM", { font: "25px Chakra Petch", fill: "#0a2239", align: "center" });
-		this.createRoomText = this.game.add.text(440, 430, "JOIN A GAME", { font: "25px Chakra Petch", fill: "#0a2239", align: "center" });
+		this.createRoomText = this.game.add.text(5, 110, "CREATE ROOM", { font: "25px Chakra Petch", fill: "#ffffff", align: "center" });
+		this.createRoomText = this.game.add.text(860, 110, "JOIN ROOM", { font: "25px Chakra Petch", fill: "#ffffff", align: "center" });
+		this.createRoomText = this.game.add.text(440, 430, "JOIN A GAME", { font: "25px Chakra Petch", fill: "#ffffff", align: "center" });
 
 		this.shots = [];
 		this.actualShot = 0;
