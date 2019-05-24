@@ -91,7 +91,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 			case "ACABADA":
 				game.roomMap.remove(player.getNameRoom());
 				
-				//player.puntuacion=0;
+				player.puntuacion=0;
 				
 				player.setNameRoom("MENU");
 				game.addPlayer(player);
@@ -99,7 +99,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 			case "DESTRUIDO":
 				player.lock.lock();
 				game.removePlayer(player);
-				//player.puntuacion=0;
+				player.puntuacion=0;
 				player.roomName = node.get("room").asText();
 				game.addPlayer(player);
 				msg.put("event", "REMOVE PLAYER");

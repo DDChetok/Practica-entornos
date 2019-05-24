@@ -40,7 +40,7 @@ Spacewar.scoreboardState.prototype = {
 	showScore:function(){
 		
 		for(i = 0; i<game.global.myPlayer.room.score.length;i++){
-			this.score = this.game.add.text(this.game.width / 2, 100 + (i*40), "Jugador: " + game.global.myPlayer.room.score[i].nombre + " Puntuacion: " + game.global.myPlayer.room.score[i].score, { font: "20px Chakra Petch", fill: "#0a2239", align: "center" });
+			this.score = this.game.add.text(this.game.width / 2, 100 + (i*40), "Jugador: " + game.global.myPlayer.room.score[i].nombre + " Puntuacion: " + game.global.myPlayer.room.score[i].score, { font: "20px Chakra Petch", fill: "#ffffff", align: "center" });
 		}
 	}
 	
