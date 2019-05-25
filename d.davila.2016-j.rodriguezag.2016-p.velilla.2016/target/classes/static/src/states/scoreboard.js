@@ -44,20 +44,30 @@ Spacewar.scoreboardState.prototype = {
 			this.winTextwinner = this.game.add.text(this.game.width / 2 - 250, 100 , "YOU WIN!", { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
 		}
 
-		/*game.global.myPlayer.room.score.sort(function(a, b){return b-a});
+		var puntuacionesOrdenadas = this.ordenarPuntuaciones(game.global.myPlayer.room.score);
 
-		var posAnterior = game.global.myPlayer.room.score[0]
-		for(i = 1;i < game.global.myPlayer.room.score.length;i++){
-			if(posAnterior.score <  game.global.myPlayer.room.score[i].score){
-				game.global.myPlayer.room.score[i-1] = game.global.myPlayer.room.score[i]
-				game.global.myPlayer.room.score[i] = posAnterior
-			}
-			posAnterior = game.global.myPlayer.room.score[i] 
-		}*/
-		
 		for(i = 0; i<game.global.myPlayer.room.score.length;i++){
-			this.score = this.game.add.text(this.game.width / 2, 100 + (i*40), "Jugador: " + game.global.myPlayer.room.score[i].nombre + " Puntuacion: " + game.global.myPlayer.room.score[i].score, { font: "20px Chakra Petch", fill: "#ffffff", align: "center" });
+			this.score = this.game.add.text(this.game.width / 2, 100 + (i*40), "Jugador: " +puntuacionesOrdenadas[i].nombre + " Puntuacion: " + puntuacionesOrdenadas[i].score, { font: "20px Chakra Petch", fill: "#ffffff", align: "center" });
 		}
+	},
+
+	ordenarPuntuaciones: function(puntuaciones){
+		var aux_elem;
+
+		for (i = 0; i < puntuaciones.length - 1; i++)
+		{
+			for (j = 1; j < puntuaciones.length; j++)
+			{
+				if (puntuaciones[j].score > puntuaciones[j-1].score)
+				{   // si el elemento anterior es mayor, hacemos el cambio
+					aux_elem = puntuaciones[j];
+					puntuaciones[j] = puntuaciones[j-1];
+					puntuaciones[j-1] = aux_elem;
+				}
+			}
+		}
+
+		return puntuaciones;
 	}
 	
 }
