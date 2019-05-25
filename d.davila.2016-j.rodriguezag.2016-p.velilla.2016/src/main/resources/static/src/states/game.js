@@ -106,12 +106,13 @@ Spacewar.gameState.prototype = {
 		this.sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
 		this.aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
 		this.dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
+		this.rKey = game.input.keyboard.addKey(Phaser.Keyboard.R);
 		this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
 		// Stop the following keys from propagating up to the browser
 		game.input.keyboard.addKeyCapture([ Phaser.Keyboard.W,
 				Phaser.Keyboard.S, Phaser.Keyboard.A, Phaser.Keyboard.D,
-				Phaser.Keyboard.SPACEBAR ]);
+				Phaser.Keyboard.SPACEBAR, Phaser.Keyboard.R ]);
 
 		game.camera.follow(game.global.myPlayer.image);
 	},
@@ -144,6 +145,10 @@ Spacewar.gameState.prototype = {
 				this.reloadTimer.resume();
 			} 
 			
+		}
+		if (this.rKey.isDown){
+			game.global.myPlayer.reloading = true;
+			this.reloadTimer.resume();
 		}
 
 		if(!game.global.myPlayer.reloading){
