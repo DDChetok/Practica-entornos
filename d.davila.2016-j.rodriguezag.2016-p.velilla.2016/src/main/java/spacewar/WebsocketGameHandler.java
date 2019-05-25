@@ -65,7 +65,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 		msg.put("event", "REMOVE PLAYER");
 		msg.put("id", player.getPlayerId());
 		player.lock.unlock();
-		game.broadcast(msg.toString());
+		game.broadcast(msg.toString(),player.getNameRoom());
 		
 	}
 	
@@ -120,11 +120,11 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					arrayPuntuaciones.addPOJO(jsonPuntuacion);
 				}
 				msg.putPOJO("score", arrayPuntuaciones);
-				
+				String salaAntigua = player.getNameRoom();
 				game.removePlayer(player);
 				player.roomName = node.get("room").asText();
 				game.addPlayer(player);
-				game.broadcast(msg.toString());
+				game.broadcast(msg.toString(),salaAntigua);
 				player.lock.unlock();
 				break;
 			case "JOIN_ROOM_REQUEST":
@@ -209,6 +209,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					msg.put("salaCreada", true);
 					//room.playersSet.put(player.getPlayerId(),player);
 					//room.numPlayers.incrementAndGet();
+					//String salaAntigua_2 = player.roomName;
 					player.roomName = room1.getRoomName();
 					game.addPlayer(player);
 					room1.idHost = player.getPlayerId();
@@ -218,7 +219,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					msg2.put("event", "REMOVE PLAYER");
 					msg2.put("id", player.getPlayerId());
 					
-					game.broadcast(msg2.toString());	
+					game.broadcast(msg2.toString(),player.getNameRoom());	
 				}
 				player.lock.lock();
 				player.getSession().sendMessage(new TextMessage(msg.toString()));

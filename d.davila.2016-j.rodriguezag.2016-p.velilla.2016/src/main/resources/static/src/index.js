@@ -124,14 +124,14 @@ window.onload = function() {
 				for (var player of msg.players) {
 					if (game.global.myPlayer.id == player.id) { //MI JUGADOR
 
-						checkMuerte(game.global.myPlayer,player.vida)
+						checkMuerte(game.global.myPlayer,player.vida,msg.puntuaciones);
 						actualizarPosicion(game.global.myPlayer,player);
 						crearTextoNombre(game.global.myPlayer);
 						crearBarraVida(game.global.myPlayer);
 
 						
 					} else { //OTROS JUGADORES
-						if(game.global.myPlayer.room.name == player.nombre){ //Crear otros jugadores
+						//if(game.global.myPlayer.room.name == player.nombre){ //Crear otros jugadores
 
 							
 							if (typeof game.global.otherPlayers[player.id] == 'undefined') {
@@ -154,12 +154,12 @@ window.onload = function() {
 								crearTextoNombreOtherPlayers(game.global.otherPlayers[player.id],player.PlayerNombre)
 							}
 						
-					}
+					//}
 				}
 				}
 			}
 				for (var projectile of msg.projectiles) {
-					if(game.global.myPlayer.room.name == player.nombre){
+					//if(game.global.myPlayer.room.name == player.nombre){
 						if (projectile.isAlive) {
 							game.global.projectiles[projectile.id].image.x = projectile.posX
 							game.global.projectiles[projectile.id].image.y = projectile.posY
@@ -178,13 +178,14 @@ window.onload = function() {
 							}
 							game.global.projectiles[projectile.id].image.visible = false
 						}
-				}
+				//}
 			}
 
 			if(msg.acabada == true && game.global.myPlayer.room.name != 'MENU' && msg.room == game.global.myPlayer.room.name){
 				var mess = {
 						event: "ACABADA"
 				}
+				game.global.myPlayer.winner = true;
 				game.global.myPlayer.room.score = msg.puntuaciones;
 
 				game.global.socket.send(JSON.stringify(mess));
@@ -206,7 +207,7 @@ window.onload = function() {
 				delete game.global.otherPlayers[msg.id]
 			}
 			
-			game.global.myPlayer.room.score = msg.score;
+			//game.global.myPlayer.room.score = msg.score;
 			break;
 		default :
 			console.dir(msg)
@@ -230,7 +231,7 @@ window.onload = function() {
 	
 }
 
-function checkMuerte(player,vida){
+function checkMuerte(player,vida,puntuaciones){
 	game.global.myPlayer.vida = vida;
 	if (player.vida <= 0){ //Si el jugador muere
 
@@ -241,6 +242,8 @@ function checkMuerte(player,vida){
 			room: player.room.name
 		}
 		game.global.socket.send(JSON.stringify(msg))
+
+		game.global.myPlayer.room.score = puntuaciones;
 		game.state.start("scoreboardState");
 	}
 

@@ -87,9 +87,9 @@ public class SpacewarGame {
 		}
 	}
 
-	public void broadcast(String message) {
-		for(Room room : roomMap.values()) {
-			for (Player player : room.playersSet.values()) {
+	public void broadcast(String message,String roomName) {
+		Room r = roomMap.get(roomName);
+			for (Player player : r.playersSet.values()) {
 				try {
 					player.lock.lock();
 					player.getSession().sendMessage(new TextMessage(message.toString()));
@@ -100,7 +100,7 @@ public class SpacewarGame {
 					this.removePlayer(player);
 				}
 			}
-		}
+		
 	}
 
 	private void tick() {
@@ -194,7 +194,7 @@ public class SpacewarGame {
 				json.putPOJO("projectiles", arrayNodeProjectiles);
 				json.putPOJO("puntuaciones", arrayNodePuntuaciones);
 				
-				this.broadcast(json.toString());
+				this.broadcast(json.toString(),room.getRoomName());
 				
 				
 			}

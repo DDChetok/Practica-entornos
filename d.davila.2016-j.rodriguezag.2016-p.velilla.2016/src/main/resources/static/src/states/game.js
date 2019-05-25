@@ -3,6 +3,10 @@ Spacewar.gameState = function(game) {
 	this.fireBullet
 	this.numStars = 100 // Should be canvas size dependant
 	this.maxProjectiles = 800 // 8 per player
+	this.maxAmmo = 10
+	this.reloadTimer;	
+	this.reloadText;
+	
 }
 
 Spacewar.gameState.prototype = {
@@ -17,6 +21,14 @@ Spacewar.gameState.prototype = {
 			delete game.global.otherPlayers[i];
 		}
 		
+		this.reloadTimer = game.time.create(false)
+		this.reloadTimer.add(1000, this.reloadMethod, this);
+		this.reloadTimer.start();
+		this.reloadTimer.pause();
+
+		this.reloadText = this.game.add.text( 100 , this.game.height - 100,game.global.myPlayer.ammo + "/" + this.maxAmmo, { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
+		this.reloadText.anchor.setTo(0.5, 0.5);
+		this.reloadText.fixedToCamera = true;
 
 		this.initMyPlayer();
 
@@ -25,10 +37,20 @@ Spacewar.gameState.prototype = {
 
 	initMyPlayer: function(){
 		//Delete name text
+		game.global.myPlayer.winner = false;
+		game.global.myPlayer.ammo = this.maxAmmo;
+		game.global.myPlayer.reloading = false;
 		delete game.global.myPlayer.textoNombre;
 		delete game.global.myPlayer.healthBar;
 		delete game.global.myPlayer.redHealthBar;
 
+	},
+
+	reloadMethod: function(){
+		game.global.myPlayer.ammo = this.maxAmmo; 
+		this.reloadTimer.pause();
+		this.reloadTimer.add(2000, this.reloadMethod, this);
+		game.global.myPlayer.reloading = false;
 	},
 
 	updateHealthBarOtherPlayer: function(player){
@@ -72,6 +94,7 @@ Spacewar.gameState.prototype = {
 		this.fireBullet = function() {
 			if (game.time.now > this.bulletTime) {
 				this.bulletTime = game.time.now + 250;
+				game.global.myPlayer.ammo -= 1;
 				// this.weapon.fire()
 				return true
 			} else {
@@ -114,9 +137,21 @@ Spacewar.gameState.prototype = {
 			msg.movement.rotLeft = true;
 		if (this.dKey.isDown)
 			msg.movement.rotRight = true;
-		if (this.spaceKey.isDown) {
-			msg.bullet = this.fireBullet()
+		if (this.spaceKey.isDown && !game.global.myPlayer.reloading) {
+			msg.bullet = this.fireBullet();
+			if(game.global.myPlayer.ammo <= 0){
+				game.global.myPlayer.reloading = true;
+				this.reloadTimer.resume();
+			} 
+			
 		}
+
+		if(!game.global.myPlayer.reloading){
+			this.reloadText.setText(game.global.myPlayer.ammo + "/" + this.maxAmmo)
+		}else{
+			this.reloadText.setText("Recargando")
+		}
+		
 
 		if (game.global.DEBUG_MODE) {
 			console.log("[DEBUG] Sending UPDATE MOVEMENT message to server")
