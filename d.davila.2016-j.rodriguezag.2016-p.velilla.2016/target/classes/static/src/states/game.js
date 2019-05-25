@@ -27,7 +27,8 @@ Spacewar.gameState.prototype = {
 		this.reloadTimer.pause();
 
 		this.reloadText = this.game.add.text( 100 , this.game.height - 100,game.global.myPlayer.ammo + "/" + this.maxAmmo, { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
-		this.reloadText.anchor.setTo(0.5, 0.5)
+		this.reloadText.anchor.setTo(0.5, 0.5);
+		this.reloadText.fixedToCamera = true;
 
 		this.initMyPlayer();
 
@@ -93,7 +94,7 @@ Spacewar.gameState.prototype = {
 		this.fireBullet = function() {
 			if (game.time.now > this.bulletTime) {
 				this.bulletTime = game.time.now + 250;
-				game.global.myPlayer.ammo -=1;
+				game.global.myPlayer.ammo -= 1;
 				// this.weapon.fire()
 				return true
 			} else {

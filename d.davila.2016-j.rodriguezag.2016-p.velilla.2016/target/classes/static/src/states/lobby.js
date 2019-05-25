@@ -1,5 +1,5 @@
 Spacewar.lobbyState = function(game) {
-
+	this.createRoomText;
 }
 
 Spacewar.lobbyState.prototype = {
@@ -34,7 +34,15 @@ Spacewar.lobbyState.prototype = {
         button.width = 75;
         button.height = 75;
 
-        //button.onInputOver.add(overButton, this);
+		
+	},
+
+	updateText:function(string){
+		//Updatear texto
+		this.createRoomText = game.add.text(game.width/2, 100, "", { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
+		this.createRoomText.anchor.setTo(0.5, 0.5);
+		this.createRoomText.fixedToCamera = true;
+		this.createRoomText.setText(string);
 	},
 
 	update : function() {
@@ -49,8 +57,16 @@ Spacewar.lobbyState.prototype = {
 			roomMaxPlayers :  document.getElementById("RoomMaxPlayers").value
 		}
 		
-
-		game.global.socket.send(JSON.stringify(msg));
+		if(msg.roomName != ""){
+			if(msg.roomMaxPlayers < game.global.minPlayersPorPartida){
+				msg.roomMaxPlayers = game.global.minPlayersPorPartida;
+			}
+			if(msg.roomMaxPlayers > game.global.maxPlayersPorPartida){
+				msg.roomMaxPlayers = game.global.maxPlayersPorPartida;
+			}
+			game.global.socket.send(JSON.stringify(msg));
+		}
+		
 
 	},
 

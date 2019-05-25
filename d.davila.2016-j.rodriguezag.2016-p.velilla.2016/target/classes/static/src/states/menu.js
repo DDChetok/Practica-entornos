@@ -8,32 +8,6 @@ Spacewar.menuState = function(game) {
 
 Spacewar.menuState.prototype = {
 
-	init : function() {
-		if (game.global.DEBUG_MODE) {
-			console.log("[DEBUG] Entering **MENU** state");
-		}
-		
-		for (i = 0;i < game.global.otherPlayers.length;i++){
-			//delete game.global.otherPlayers[i].healthBar;
-			//delete game.global.otherPlayers[i].redHealthBar;
-			delete game.global.otherPlayers[i];
-			
-		}
-	
-		this.initMyPlayer();
-		this.createGameState();
-		this.hideHTML();
-	},
-
-	
-	initMyPlayer: function(){
-		//Delete name text
-		delete game.global.myPlayer.textoNombre;
-		delete game.global.myPlayer.healthBar;
-		delete game.global.myPlayer.redHealthBar;
-
-	},
-
 	preload : function() {
 		// In case JOIN message from server failed, we force it
 		if (typeof game.global.myPlayer.id == 'undefined') {
@@ -61,6 +35,41 @@ Spacewar.menuState.prototype = {
 		this.game.physics.arcade.enable(game.global.projectiles);
 	},
 
+	init : function() {
+		if (game.global.DEBUG_MODE) {
+			console.log("[DEBUG] Entering **MENU** state");
+		}
+		
+		for (i = 0;i < game.global.otherPlayers.length;i++){
+			if(typeof game.global.otherPlayers[i] !== undefined){
+				//game.global.otherPlayers[msg.id].image.destroy()
+				//game.global.otherPlayers[i].textoNombre.destroy()
+				//game.global.otherPlayers[i].healthBar.destroy();
+				//game.global.otherPlayers[i].redHealthBar.destroy();
+			}
+			delete game.global.otherPlayers[i];
+		}
+	
+		this.initMyPlayer();
+		this.createGameState();
+		this.hideHTML();
+
+		//Timer
+		Spacewar.menuState.noGameFoundTimer = game.time.create(false)
+		Spacewar.menuState.noGameFoundTimer.add(2000, this.clearText, this);
+		Spacewar.menuState.noGameFoundTimer.start();
+		Spacewar.menuState.noGameFoundTimer.pause();
+	
+	},
+	
+	initMyPlayer: function(){
+		//Delete name text
+		delete game.global.myPlayer.textoNombre;
+		delete game.global.myPlayer.healthBar;
+		delete game.global.myPlayer.redHealthBar;
+
+	},
+	
 	create : function() {
 
 		//Local bullets
@@ -82,13 +91,35 @@ Spacewar.menuState.prototype = {
 
 		//Textos 
 		this.createRoomText = this.game.add.text(5, 110, "CREATE ROOM", { font: "25px Chakra Petch", fill: "#ffffff", align: "center" });
-		this.createRoomText = this.game.add.text(860, 110, "JOIN ROOM", { font: "25px Chakra Petch", fill: "#ffffff", align: "center" });
-		this.createRoomText = this.game.add.text(440, 430, "JOIN A GAME", { font: "25px Chakra Petch", fill: "#ffffff", align: "center" });
+		this.joinRoomText = this.game.add.text(860, 110, "JOIN ROOM", { font: "25px Chakra Petch", fill: "#ffffff", align: "center" });
+		this.matchmakingText = this.game.add.text(440, 430, "JOIN A GAME", { font: "25px Chakra Petch", fill: "#ffffff", align: "center" });
+
+		Spacewar.menuState.noGameFoundText = game.add.text(440, 390, "", { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
 
 		this.shots = [];
 		this.actualShot = 0;
 
 
+	},
+
+	clearText: function(){
+		//Spacewar.menuState.noGameFoundTimer.pause();
+		if(Spacewar.menuState.noGameFoundText != ""){
+			Spacewar.menuState.noGameFoundText.setText("");
+			Spacewar.menuState.noGameFoundTimer.add(2000,this.clearText,this);
+			Spacewar.menuState.noGameFoundTimer.start();
+			Spacewar.menuState.noGameFoundTimer.pause();
+		}
+	},
+
+	updateText:function(string){
+		//Updatear texto
+		
+		Spacewar.menuState.noGameFoundText.anchor.setTo(0.5, 0.5);
+		Spacewar.menuState.noGameFoundText.fixedToCamera = true;
+		Spacewar.menuState.noGameFoundText.setText(string);
+
+		Spacewar.menuState.noGameFoundTimer.resume();
 	},
 
 	update : function() {
@@ -142,9 +173,20 @@ Spacewar.menuState.prototype = {
 				game.state.start('roomState')
 				break;
 			case 2:
-				game.state.start('matchmakingState')
+				proyectile.kill();
+				this.sendRoomRequest();
+				//game.state.start('matchmakingState')
 				break;
 		}
+	},
+
+	sendRoomRequest: function(){
+		var msg = {
+			event: "SEND_ROOM_REQUEST"
+		}
+
+		game.global.socket.send(JSON.stringify(msg));
+
 	},
 
 	sendPlayerInfo: function(){
