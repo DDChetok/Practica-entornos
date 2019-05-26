@@ -40,8 +40,15 @@ public class Room {
 		return "Room [roomName=" + roomName + ", roomGamemode=" + roomGamemode + ", roomMaxPlayers=" + roomMaxPlayers
 				+ "]";
 	}
+	
+	public AtomicInteger getNumPlayers() {
+		return numPlayers;
+	}
 
-
+	public void setNumPlayers(AtomicInteger numPlayers) {
+		this.numPlayers = numPlayers;
+	}
+	
 	public String getRoomName() {
 		return roomName;
 	}
@@ -55,7 +62,7 @@ public class Room {
 	}
 	
 	public boolean areEquals(Room r2) {
-		return ((Objects.equals(getRoomName(), r2.getRoomName())) && (Objects.equals(getRoomGamemode(), r2.getRoomGamemode())) && (getRoomMaxPlayers() == r2.getRoomMaxPlayers()));
+		return (Objects.equals(getRoomName(), r2.getRoomName()));
 	}
 	
 	public void addProjectile(int id, Projectile projectile) {

@@ -16,6 +16,10 @@ Spacewar.loginState.prototype = {
 
 	create : function() {
 		this.showHTML();
+
+		this.createNameText =  this.game.add.text(this.game.width/2, 100, "Insert your name", { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
+		this.createNameText.anchor.setTo(0.5, 0.5);
+		this.createNameText.fixedToCamera = true;
 	},
 
 	update : function() {

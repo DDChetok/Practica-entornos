@@ -83,6 +83,29 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 			Player player = (Player) session.getAttributes().get(PLAYER_ATTRIBUTE);
 
 			switch (node.get("event").asText()) {
+			case "SEND_ROOM_REQUEST":
+				player.lock.lock();
+				game.roomLock.lock();
+				boolean existe = false;
+				for(Room r : game.roomMap.values()) {
+					if(r.getRoomName() != "MENU" && (r.getNumPlayers().get() < r.getRoomMaxPlayers())) {
+						game.removePlayer(player);
+						player.roomName = r.getRoomName();
+						game.addPlayer(player);
+						existe = true;
+						msg.put("roomName", r.getRoomName());
+						msg.put("idHost", r.idHost);
+						break;
+					}
+				}
+				
+				msg.put("existe", existe);
+				msg.put("event", "JOIN_ROOM_REQUEST");
+				
+				player.getSession().sendMessage(new TextMessage(msg.toString()));
+				game.roomLock.unlock();
+				player.lock.unlock();
+				break;
 			case "RESET_SCORE":
 				player.lock.lock();
 					

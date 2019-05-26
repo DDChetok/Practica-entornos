@@ -15,7 +15,9 @@ window.onload = function() {
 		maxAltoBarraVida: 10,
 		maxAnchoBarraVidaOtherPlayer: 70,
 		maxAltoBarraVidaOtherPlayer: 5,
-		vidaMax: 100
+		vidaMax: 100,
+		minPlayersPorPartida: 2,
+		maxPlayersPorPartida: 50
 	}
 
 	// WEBSOCKET CONFIGURATOR
@@ -63,7 +65,8 @@ window.onload = function() {
 				game.global.myPlayer.vida = msg.vida
 				game.state.start('matchmakingState');
 			}else{
-				console.log("No existe ninguna sala con ese nombre o la partida ya ha comenzado, gl in esports :(");
+				//console.log("No existe ninguna sala con ese nombre o la partida ya ha comenzado, gl in esports :(");
+				Spacewar.menuState.prototype.updateText("No hay ninguna sala disponible");
 			}
 			break;
 		case 'CHECK_ESTADO':
@@ -88,6 +91,7 @@ window.onload = function() {
 				}
 				game.state.start('matchmakingState');
 			}else{
+				Spacewar.lobbyState.prototype.updateText("Ya hay una sala con ese nombre, gl in esports :(");
 				console.log("Ya hay una sala con ese nombre, gl in esports :(");
 			}
 			
