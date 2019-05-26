@@ -51,6 +51,8 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 		player.roomName = "MENU";
 		
 		game.addPlayer(player);
+		game.startGameLoop();
+		
 	}
 	
 	@Override
@@ -66,7 +68,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 		msg.put("id", player.getPlayerId());
 		player.lock.unlock();
 		game.broadcast(msg.toString(),player.getNameRoom());
-		
+		game.stopGameLoop();
 	}
 	
 	static class ChatMessage {

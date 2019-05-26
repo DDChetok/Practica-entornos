@@ -50,14 +50,15 @@ public class SpacewarGame {
 	public void addPlayer(Player player) {
 		//players.put(player.getSession().getId(), player);
 		roomLock.lock();
+		player.initSpaceship(500, 300, -90/*Math.random() * 360*/);
 		Room room = roomMap.get(player.roomName);
 		room.playersSet.put(player.getPlayerId(),player);
 		room.puntuacionSet.put(player.getPlayerId(),player);
 		int count = room.numPlayers.getAndIncrement();
 		player.setVida(100);
-		if (count >= 0) {
-			this.startGameLoop();
-		}
+		//if (count >= 0 && player.getNameRoom() != "") {
+			//this.startGameLoop();
+		//}
 		roomLock.unlock();
 	}
 
@@ -70,9 +71,9 @@ public class SpacewarGame {
 		Room room = roomMap.get(player.roomName);
 		room.playersSet.remove(player.getPlayerId());
 		int count = room.numPlayers.decrementAndGet();
-		if (count == 0) {
-			this.stopGameLoop();
-		}
+		//if (count <= 0 && player.getNameRoom() != "") {
+			//this.stopGameLoop();
+		//}
 		roomLock.unlock();
 	}
 
