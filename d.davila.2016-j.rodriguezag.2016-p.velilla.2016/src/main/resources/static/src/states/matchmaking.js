@@ -34,6 +34,10 @@ Spacewar.matchmakingState.prototype = {
 		this.roomText = this.game.add.text(this.game.width/2, 110,"Room: " + game.global.myPlayer.room.name, { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
 		this.roomText.anchor.setTo(0.5, 0.5);
 		this.roomText.fixedToCamera = true;
+
+		Spacewar.matchmakingState.roomGamemodeText = this.game.add.text(this.game.width/2, 150,"Gamemode: " + game.global.myPlayer.room.gameMode, { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
+		Spacewar.matchmakingState.roomGamemodeText.anchor.setTo(0.5, 0.5);
+		Spacewar.matchmakingState.roomGamemodeText.fixedToCamera = true;
 	},
 
 	update : function() {
@@ -48,12 +52,15 @@ Spacewar.matchmakingState.prototype = {
 			roomName: game.global.myPlayer.room.name
 		}
 
+		//Spacewar.matchmakingState.roomGamemodeText.setText("Gamemode: " + game.global.myPlayer.room.gameMode);
+
 		game.global.socket.send(JSON.stringify(msg));
 	},
 
 	updateText:function(numJugadores){
 		//Updatear texto
 		Spacewar.matchmakingState.textoNumJugadores.setText(numJugadores + " players connected");
+
 	},
 
 	startGame:function(){

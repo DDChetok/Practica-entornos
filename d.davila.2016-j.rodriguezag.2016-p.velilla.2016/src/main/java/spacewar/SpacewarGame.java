@@ -43,7 +43,7 @@ public class SpacewarGame {
 	public Lock tickLock = new ReentrantLock();
 	
 	public SpacewarGame() {
-		Room menu = new Room("MENU","menu",50,-1);
+		Room menu = new Room("MENU","menu",50,-1,50);
 		roomMap.put(menu.getRoomName(), menu);
 	}
 
@@ -56,6 +56,7 @@ public class SpacewarGame {
 		room.puntuacionSet.put(player.getPlayerId(),player);
 		int count = room.numPlayers.getAndIncrement();
 		player.setVida(100);
+		player.rondasPerdidas = 0;
 		//if (count >= 0 && player.getNameRoom() != "") {
 			//this.startGameLoop();
 		//}
@@ -71,9 +72,9 @@ public class SpacewarGame {
 		Room room = roomMap.get(player.roomName);
 		room.playersSet.remove(player.getPlayerId());
 		int count = room.numPlayers.decrementAndGet();
-		//if (count <= 0 && player.getNameRoom() != "") {
-			//this.stopGameLoop();
-		//}
+		if(count <= 0 && room.getRoomName() != "MENU") {
+			roomMap.remove(room.getRoomName());
+		}
 		roomLock.unlock();
 	}
 
@@ -106,7 +107,6 @@ public class SpacewarGame {
 
 	private void tick() {
 		
-
 		long thisInstant = System.currentTimeMillis();
 		Set<Integer> bullets2Remove = new HashSet<>();
 		boolean removeBullets = false;
@@ -118,10 +118,11 @@ public class SpacewarGame {
 				ArrayNode arrayNodePlayers = mapper.createArrayNode();
 				ArrayNode arrayNodeProjectiles = mapper.createArrayNode();
 				ArrayNode arrayNodePuntuaciones = mapper.createArrayNode();
+				ArrayNode arrayNodeRondas = mapper.createArrayNode();
+				
 				// Update players
 				for (Player player : room.playersSet.values()) {
 					player.calculateMovement();
-	
 					ObjectNode jsonPlayer = mapper.createObjectNode();
 					jsonPlayer.put("id", player.getPlayerId());
 					jsonPlayer.put("shipType", player.getShipType());
@@ -132,6 +133,7 @@ public class SpacewarGame {
 					jsonPlayer.put("PlayerNombre", player.getPlayerName());
 					jsonPlayer.put("vida", player.getVida());
 					jsonPlayer.put("puntuacion", player.getPuntuacion());
+					jsonPlayer.put("rondasPerdidas",player.rondasPerdidas);
 					arrayNodePlayers.addPOJO(jsonPlayer);   
 				}
 	
@@ -173,12 +175,15 @@ public class SpacewarGame {
 				}
 				
 				for(Player puntuacion : room.puntuacionSet.values()) {
+					ObjectNode jsonPlayerRondas = mapper.createObjectNode();
+					jsonPlayerRondas.put("rondasPerdidas", puntuacion.rondasPerdidas);
 					
 					ObjectNode jsonPuntuacion = mapper.createObjectNode();
 					jsonPuntuacion.put("id", puntuacion.getPlayerId());
 					jsonPuntuacion.put("nombre", puntuacion.getPlayerName());
 					jsonPuntuacion.put("score", puntuacion.puntuacion);
 					
+					arrayNodeRondas.addPOJO(jsonPlayerRondas);
 					arrayNodePuntuaciones.addPOJO(jsonPuntuacion);
 				}
 	
@@ -188,13 +193,16 @@ public class SpacewarGame {
 				if(room.numPlayers.get() <= 1 && room.getRoomName() != "MENU" && room.puntuacionSet.size()>=2) {
 					room.acabada = true;
 				}
+				
+				json.put("numVivos",room.getNumPlayers().get());
 				json.put("room",room.getRoomName());
+				json.put("roomGamemode",room.getRoomGamemode());
 				json.put("acabada", room.acabada);
 				json.put("event", "GAME STATE UPDATE");
 				json.putPOJO("players", arrayNodePlayers);
 				json.putPOJO("projectiles", arrayNodeProjectiles);
 				json.putPOJO("puntuaciones", arrayNodePuntuaciones);
-				
+				json.putPOJO("rondasPerdidasOtrosJugadores", arrayNodeRondas);
 				this.broadcast(json.toString(),room.getRoomName());
 				
 				

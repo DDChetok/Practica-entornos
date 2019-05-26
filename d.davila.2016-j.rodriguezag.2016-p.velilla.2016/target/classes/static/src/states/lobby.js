@@ -58,7 +58,7 @@ Spacewar.lobbyState.prototype = {
 		}
 		
 		if(msg.roomName != ""){
-			if(msg.roomMaxPlayers < game.global.minPlayersPorPartida){
+			if(msg.roomMaxPlayers < game.global.minPlayersPorPartida || msg.roomGamemode == "classic"){
 				msg.roomMaxPlayers = game.global.minPlayersPorPartida;
 			}
 			if(msg.roomMaxPlayers > game.global.maxPlayersPorPartida){

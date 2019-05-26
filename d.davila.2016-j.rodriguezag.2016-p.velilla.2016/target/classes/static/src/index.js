@@ -60,6 +60,7 @@ window.onload = function() {
 				game.global.myPlayer.room = {
 					name : msg.roomName,
 					idHost: msg.idHost,
+					gameMode : msg.roomGamemode,
 					score: []
 				}
 				game.global.myPlayer.vida = msg.vida
@@ -89,6 +90,7 @@ window.onload = function() {
 				game.global.myPlayer.room = {
 					name : msg.roomName,
 					idHost : msg.idHost,
+					gameMode : msg.roomGamemode,
 					score: []
 				}
 				game.state.start('matchmakingState');
@@ -124,13 +126,18 @@ window.onload = function() {
 				console.dir(msg)
 			}
 
+			if(msg.roomGamemode == "classic"){
+				Spacewar.gameState.rondasText.setText(msg.rondasPerdidasOtrosJugadores[0].rondasPerdidas + " - " + msg.rondasPerdidasOtrosJugadores[1].rondasPerdidas);
+			}else if(msg.roomGamemode == "battle_royale"){
+				Spacewar.gameState.rondasText.setText(msg.numVivos + " ships alive" );
+			}
 			
 			
 			if (typeof game.global.myPlayer.image !== 'undefined') {
 				for (var player of msg.players) {
 					if (game.global.myPlayer.id == player.id) { //MI JUGADOR
 
-						checkMuerte(game.global.myPlayer,player.vida,msg.puntuaciones);
+						checkMuerte(game.global.myPlayer,player.vida,msg.puntuaciones,msg.roomGamemode,player.rondasPerdidas);
 						actualizarPosicion(game.global.myPlayer,player);
 						crearTextoNombre(game.global.myPlayer);
 						crearBarraVida(game.global.myPlayer);
@@ -237,20 +244,43 @@ window.onload = function() {
 	
 }
 
-function checkMuerte(player,vida,puntuaciones){
+function checkMuerte(player,vida,puntuaciones,roomGamemode,rondasPerdidas){
 	game.global.myPlayer.vida = vida;
 	if (player.vida <= 0){ //Si el jugador muere
+		game.global.myPlayer.vida = 100;
 
-		player.room.name = "MENU";
+		if(roomGamemode == "classic"){
+			if(rondasPerdidas >= 1){
+				player.room.name = "MENU";
 		
-		var msg = {
-			event: "DESTRUIDO",
-			room: player.room.name
-		}
-		game.global.socket.send(JSON.stringify(msg))
+				var msg = {
+					event: "DESTRUIDO",
+					room: player.room.name
+				}
+				game.global.socket.send(JSON.stringify(msg))
+		
+				game.global.myPlayer.room.score = puntuaciones;
+				game.state.start("scoreboardState");
+			}else{
+				var msg = {
+					event: "NEW_ROUND"
+				}
 
-		game.global.myPlayer.room.score = puntuaciones;
-		game.state.start("scoreboardState");
+				game.global.socket.send(JSON.stringify(msg))
+			}
+		}else{
+			player.room.name = "MENU";
+		
+			var msg = {
+				event: "DESTRUIDO",
+				room: player.room.name
+			}
+			game.global.socket.send(JSON.stringify(msg))
+	
+			game.global.myPlayer.room.score = puntuaciones;
+			game.state.start("scoreboardState");
+		}
+		
 	}
 
 }

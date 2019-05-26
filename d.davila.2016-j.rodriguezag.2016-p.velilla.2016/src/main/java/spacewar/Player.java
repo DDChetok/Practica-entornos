@@ -18,6 +18,7 @@ public class Player extends Spaceship {
 	public int vida = 100;
 	public int puntuacion;
 	public Lock lock;
+	public int rondasPerdidas;
 
 	public Player(int playerId, WebSocketSession session) {
 		this.playerId = playerId;

@@ -30,6 +30,10 @@ Spacewar.gameState.prototype = {
 		this.reloadText.anchor.setTo(0.5, 0.5);
 		this.reloadText.fixedToCamera = true;
 
+		Spacewar.gameState.rondasText = this.game.add.text(this.game.width/2, 30,"", { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
+		Spacewar.gameState.rondasText.anchor.setTo(0.5, 0.5);
+		Spacewar.gameState.rondasText.fixedToCamera = true;
+
 		this.initMyPlayer();
 
 		this.hideHTML();

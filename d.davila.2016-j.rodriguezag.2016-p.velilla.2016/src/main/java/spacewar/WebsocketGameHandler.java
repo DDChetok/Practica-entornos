@@ -82,6 +82,19 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 			Player player = (Player) session.getAttributes().get(PLAYER_ATTRIBUTE);
 
 			switch (node.get("event").asText()) {
+			case "NEW_ROUND":
+				game.roomLock.lock();
+				player.lock.lock();
+				player.rondasPerdidas += 1;	
+				
+				for(Player p : game.roomMap.get(player.getNameRoom()).playersSet.values()) {
+					p.setVida(100);
+					p.initSpaceship(500, 300, -90/*Math.random() * 360*/);
+				}
+				Thread.sleep(100);
+				player.lock.unlock();
+				game.roomLock.unlock();
+				break;
 			case "SEND_ROOM_REQUEST":
 				player.lock.lock();
 				game.roomLock.lock();
@@ -94,6 +107,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 						existe = true;
 						msg.put("roomName", r.getRoomName());
 						msg.put("idHost", r.idHost);
+						msg.put("roomGamemode",r.getRoomGamemode());
 						break;
 					}
 				}
@@ -157,6 +171,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					//game.roomMap.get(player.roomName).playersSet.remove(player.getPlayerId()); //Eliminamos al jugador de la sala en la que estaba
 					game.removePlayer(player);
 					msg.put("roomName", roomNameJoin);
+					msg.put("roomGamemode",game.roomMap.get(roomNameJoin).getRoomGamemode());
 					msg.put("existe", true);
 					Room roomJoin = game.roomMap.get(roomNameJoin);
 					player.roomName = roomNameJoin;
@@ -213,26 +228,26 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 			
 			case "CREATE_ROOM_REQUEST":
 				game.roomLock.lock();
-				Room room1 = new Room(node.get("roomName").asText(),node.get("roomGamemode").asText(),node.get("roomMaxPlayers").asInt(),player.getPlayerId());
+				int numRondas;
+				if(node.get("roomGamemode").asText() == "classic") {
+					numRondas = 3;
+				}else {
+					numRondas = 1;
+				}
+				Room room1 = new Room(node.get("roomName").asText(),node.get("roomGamemode").asText(),node.get("roomMaxPlayers").asInt(),player.getPlayerId(),numRondas);
 				Room room2 = game.roomMap.putIfAbsent(room1.getRoomName(), room1);
 				msg.put("event","CREATE_ROOM_REQUEST");
 				msg.put("roomName",room1.getRoomName());
 				msg.put("roomGamemode",room1.getRoomGamemode());
 				msg.put("roomMaxPlayers",room1.getRoomMaxPlayers());
 				
-				
 				if(room2 != null && room1.areEquals(room2)) { //Si son iguales, no se inserta
 					msg.put("salaCreada", false);
 					
 				}else { //Si se ha insertado correctamente
-					//game.roomMap.get(player.roomName).playersSet.remove(player.getPlayerId()); //Eliminamos al jugador de la sala en la que estaba
-					game.removePlayer(player);
+					//Eliminamos al jugador de la sala en la que estaba
+					
 					msg.put("salaCreada", true);
-					//room.playersSet.put(player.getPlayerId(),player);
-					//room.numPlayers.incrementAndGet();
-					//String salaAntigua_2 = player.roomName;
-					player.roomName = room1.getRoomName();
-					game.addPlayer(player);
 					room1.idHost = player.getPlayerId();
 					msg.put("idHost", room1.idHost);
 					//Creamos un nuevo mensaje con la informacion del jugador que se ha ido de la sala para que no nos pinte
@@ -241,6 +256,9 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					msg2.put("id", player.getPlayerId());
 					
 					game.broadcast(msg2.toString(),player.getNameRoom());	
+					game.removePlayer(player);
+					player.roomName = room1.getRoomName();
+					game.addPlayer(player);
 				}
 				player.lock.lock();
 				player.getSession().sendMessage(new TextMessage(msg.toString()));

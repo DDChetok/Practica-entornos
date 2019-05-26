@@ -22,8 +22,9 @@ public class Room {
 	public boolean ready;
 	public boolean acabada;
 	public ConcurrentMap<Integer,Player> puntuacionSet;
+	public int rondasMaximas;
 	
-	public Room(String roomName, String roomGamemode, int roomMaxPlayers,int idHost) {
+	public Room(String roomName, String roomGamemode, int roomMaxPlayers,int idHost,int rondasMaximas) {
 		super();
 		this.roomName = roomName;
 		this.roomGamemode = roomGamemode;
@@ -33,6 +34,7 @@ public class Room {
 		this.ready = false;
 		this.acabada = false;
 		this.puntuacionSet = new ConcurrentHashMap<Integer,Player>();
+		this.rondasMaximas = rondasMaximas;
 	}
 
 	@Override
