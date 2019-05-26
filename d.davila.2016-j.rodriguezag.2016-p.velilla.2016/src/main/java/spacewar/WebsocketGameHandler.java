@@ -3,10 +3,7 @@ package spacewar;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -208,11 +205,10 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				game.roomLock.unlock();
 				break;
 			case "CHAT":
-				//chat
-				System.out.println("Message received: " + message.getPayload());
-				ChatMessage mensaje = json.readValue(message.getPayload(), ChatMessage.class);
-				
-				sendOtherParticipants(session, mensaje);
+				msg.put("event", "CHAT");
+				msg.put("name", node.get("name").asText());
+				msg.put("message", node.get("message").asText());
+				game.broadcast(msg.toString(), player.getNameRoom());
 				break;
 			
 			case "CREATE_ROOM_REQUEST":
@@ -286,16 +282,4 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 		}
 	}
 
-	private void sendOtherParticipants(WebSocketSession session, ChatMessage msg) throws IOException {
-
-		String jsonMsg = json.writeValueAsString(msg);
-		
-		System.out.println("Message sent: " + jsonMsg);
-				
-		for(WebSocketSession participant : sessions.values()) {
-			if(!participant.getId().equals(session.getId())) {
-				participant.sendMessage(new TextMessage(jsonMsg));
-			}
-		}
-	}
 }

@@ -38,7 +38,7 @@ window.onload = function() {
 	///////////CHAT////////////////////
 	$('#send-btn').click(() => {
 		var msg = {
-			name : $('#name').val(),
+			name : game.global.myPlayer.PlayerNombre,
 			message : $('#message').val(),
 			event:'CHAT'
 		}
@@ -79,7 +79,9 @@ window.onload = function() {
 			break;
 		case 'CHAT':
 			console.log("WS message: " + msg.message);
-			$('#chat').val($('#chat').val() + "\n" + msg.name + ": " + msg.message);
+			if(msg.name != game.global.myPlayer.PlayerNombre){
+				$('#chat').val($('#chat').val() + "\n" + msg.name + ": " + msg.message);
+			}
 			break;
 		case 'CREATE_ROOM_REQUEST' :
 			if(msg.salaCreada){
