@@ -6,6 +6,8 @@ Spacewar.gameState = function(game) {
 	this.maxAmmo = 10
 	this.reloadTimer;	
 	this.reloadText;
+	this.propulsionTime;
+	this.maxPropulsor = 20;
 	
 }
 
@@ -26,6 +28,11 @@ Spacewar.gameState.prototype = {
 		this.reloadTimer.start();
 		this.reloadTimer.pause();
 
+		this.reloadPropulsorTimer = game.time.create(false)
+		this.reloadPropulsorTimer.add(5000, this.reloadPropulsorMethod, this);
+		this.reloadPropulsorTimer.start();
+		this.reloadPropulsorTimer.pause();
+
 		this.reloadText = this.game.add.text( 100 , this.game.height - 100,game.global.myPlayer.ammo + "/" + this.maxAmmo, { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
 		this.reloadText.anchor.setTo(0.5, 0.5);
 		this.reloadText.fixedToCamera = true;
@@ -33,6 +40,10 @@ Spacewar.gameState.prototype = {
 		Spacewar.gameState.rondasText = this.game.add.text(this.game.width/2, 30,"", { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
 		Spacewar.gameState.rondasText.anchor.setTo(0.5, 0.5);
 		Spacewar.gameState.rondasText.fixedToCamera = true;
+
+		this.propulsionText = this.game.add.text(700 , this.game.height - 100 ,game.global.myPlayer.actualPropulsor + "/" + this.maxPropulsor, { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
+		this.propulsionText.anchor.setTo(0.5, 0.5);
+		this.propulsionText.fixedToCamera = true;
 
 		this.initMyPlayer();
 
@@ -44,6 +55,8 @@ Spacewar.gameState.prototype = {
 		game.global.myPlayer.winner = false;
 		game.global.myPlayer.ammo = this.maxAmmo;
 		game.global.myPlayer.reloading = false;
+		game.global.myPlayer.actualPropulsor = this.maxPropulsor;
+		game.global.myPlayer.reloadingPropulsor = false;
 		delete game.global.myPlayer.textoNombre;
 		delete game.global.myPlayer.healthBar;
 		delete game.global.myPlayer.redHealthBar;
@@ -55,6 +68,13 @@ Spacewar.gameState.prototype = {
 		this.reloadTimer.pause();
 		this.reloadTimer.add(2000, this.reloadMethod, this);
 		game.global.myPlayer.reloading = false;
+	},
+
+	reloadPropulsorMethod: function(){
+		game.global.myPlayer.actualPropulsor = this.maxPropulsor; 
+		this.reloadPropulsorTimer.pause();
+		this.reloadPropulsorTimer.add(5000, this.reloadPropulsorMethod, this);
+		game.global.myPlayer.reloadingPropulsor = false;
 	},
 
 	updateHealthBarOtherPlayer: function(player){
@@ -106,20 +126,35 @@ Spacewar.gameState.prototype = {
 			}
 		}
 
+		this.propulsionTime = 0;
+		this.firePropulsor = function(){
+			if (game.time.now > this.propulsionTime) {
+				this.propulsionTime = game.time.now + 100;
+				game.global.myPlayer.actualPropulsor -= 1;
+				// this.weapon.fire()
+				return true
+			} else{
+				return false
+			}
+		}
+
 		this.wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
 		this.sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
 		this.aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
 		this.dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
 		this.rKey = game.input.keyboard.addKey(Phaser.Keyboard.R);
 		this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+		this.shiftKey = game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
 
 		// Stop the following keys from propagating up to the browser
 		game.input.keyboard.addKeyCapture([ Phaser.Keyboard.W,
 				Phaser.Keyboard.S, Phaser.Keyboard.A, Phaser.Keyboard.D,
-				Phaser.Keyboard.SPACEBAR, Phaser.Keyboard.R ]);
+				Phaser.Keyboard.SPACEBAR, Phaser.Keyboard.R,Phaser.Keyboard.SHIFT]);
 
 		game.camera.follow(game.global.myPlayer.image);
 	},
+
+
 
 	update : function() {
 		let msg = new Object()
@@ -129,7 +164,8 @@ Spacewar.gameState.prototype = {
 			thrust : false,
 			brake : false,
 			rotLeft : false,
-			rotRight : false
+			rotRight : false,
+
 		}
 
 		msg.bullet = false
@@ -150,16 +186,41 @@ Spacewar.gameState.prototype = {
 			} 
 			
 		}
+
 		if (this.rKey.isDown){
 			game.global.myPlayer.reloading = true;
 			this.reloadTimer.resume();
 		}
 
+		
+	if (this.shiftKey.isDown && !game.global.myPlayer.reloadingPropulsor) {
+			if(this.firePropulsor()){
+				msg.propulsion = 1.5;
+				
+			}else{
+				msg.propulsion = 0;
+			}
+			if(game.global.myPlayer.actualPropulsor <= 0){
+				game.global.myPlayer.reloadingPropulsor = true;
+				this.reloadPropulsorTimer.resume();
+			} 
+			
+	}
+	
+	
+
 		if(!game.global.myPlayer.reloading){
 			this.reloadText.setText(game.global.myPlayer.ammo + "/" + this.maxAmmo)
 		}else{
-			this.reloadText.setText("Recargando")
+			this.reloadText.setText("Reloading")
 		}
+
+		if(!game.global.myPlayer.reloadingPropulsor){
+			this.propulsionText.setText(game.global.myPlayer.actualPropulsor + "/" + this.maxPropulsor);
+		}else{
+			this.propulsionText.setText("Reloading propulsion")
+		}
+
 		
 
 		if (game.global.DEBUG_MODE) {

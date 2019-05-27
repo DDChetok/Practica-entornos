@@ -27,6 +27,9 @@ public class SpacewarGame {
 	private final static long TICK_DELAY = 1000 / FPS;
 	public final static boolean DEBUG_MODE = true;
 	public final static boolean VERBOSE_MODE = true;
+	
+	public int maxX = 1024;
+	public int maxY = 600;
 
 	ObjectMapper mapper = new ObjectMapper();
 	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -122,7 +125,21 @@ public class SpacewarGame {
 				
 				// Update players
 				for (Player player : room.playersSet.values()) {
+					player.lock.lock();
 					player.calculateMovement();
+					if(player.getPosX() < 0) {
+						player.setPosition(maxX, player.getPosY());
+					}
+					if(player.getPosX() > maxX) {
+						player.setPosition(0, player.getPosY());
+					}
+					if(player.getPosY() < 0) {
+						player.setPosition(player.getPosX(),maxY);
+					}
+					if(player.getPosY() > maxY) {
+						player.setPosition(player.getPosX(),0);
+					}
+					
 					ObjectNode jsonPlayer = mapper.createObjectNode();
 					jsonPlayer.put("id", player.getPlayerId());
 					jsonPlayer.put("shipType", player.getShipType());
@@ -135,6 +152,7 @@ public class SpacewarGame {
 					jsonPlayer.put("puntuacion", player.getPuntuacion());
 					jsonPlayer.put("rondasPerdidas",player.rondasPerdidas);
 					arrayNodePlayers.addPOJO(jsonPlayer);   
+					player.lock.unlock();
 				}
 	
 				// Update bullets and handle collision

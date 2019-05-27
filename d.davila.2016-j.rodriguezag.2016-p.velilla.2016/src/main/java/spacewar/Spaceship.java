@@ -41,8 +41,8 @@ public class Spaceship extends SpaceObject {
 		this.multVelocity(SPACE_FRICTION);
 
 		if (this.lastMovement.thrust) {
-			this.incVelocity(Math.cos(this.getFacingAngle() * Math.PI / 180) * SPACESHIP_SPEED,
-					Math.sin(this.getFacingAngle() * Math.PI / 180) * SPACESHIP_SPEED);
+			this.incVelocity(Math.cos(this.getFacingAngle() * Math.PI / 180) * (SPACESHIP_SPEED + this.propulsion),
+					Math.sin(this.getFacingAngle() * Math.PI / 180) *(SPACESHIP_SPEED + this.propulsion));
 		}
 
 		if (this.lastMovement.brake) {

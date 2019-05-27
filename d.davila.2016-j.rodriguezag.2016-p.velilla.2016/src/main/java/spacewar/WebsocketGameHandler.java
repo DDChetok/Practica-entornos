@@ -281,6 +281,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				player.lock.unlock();
 				break;
 			case "UPDATE MOVEMENT":
+				player.propulsion = node.path("propulsion").asDouble();
 				player.loadMovement(node.path("movement").get("thrust").asBoolean(),
 						node.path("movement").get("brake").asBoolean(),
 						node.path("movement").get("rotLeft").asBoolean(),

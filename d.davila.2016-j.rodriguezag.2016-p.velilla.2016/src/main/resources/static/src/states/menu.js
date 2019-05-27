@@ -64,6 +64,8 @@ Spacewar.menuState.prototype = {
 	
 	initMyPlayer: function(){
 		//Delete name text
+		game.global.myPlayer.propulsion = 0;
+
 		delete game.global.myPlayer.textoNombre;
 		delete game.global.myPlayer.healthBar;
 		delete game.global.myPlayer.redHealthBar;
@@ -198,8 +200,10 @@ Spacewar.menuState.prototype = {
 			thrust : false,
 			brake : false,
 			rotLeft : false,
-			rotRight : false
+			rotRight : false,
 		}
+
+		msg.propulsion = game.global.myPlayer.propulsion
 
 		msg.bullet = false
 
@@ -213,6 +217,12 @@ Spacewar.menuState.prototype = {
 			msg.movement.rotRight = true;
 		if (this.spaceKey.isDown) {
 			//msg.bullet = this.fireBullet()
+		}
+
+		if(this.shiftKey.isDown){
+			game.global.myPlayer.propulsion = 1;
+		}else{
+			game.global.myPlayer.propulsion = 0;
 		}
 
 		if (game.global.DEBUG_MODE) {
@@ -271,11 +281,12 @@ Spacewar.menuState.prototype = {
 		this.aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
 		this.dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
 		this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+		this.shiftKey = game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
 
 		// Stop the following keys from propagating up to the browser
 		game.input.keyboard.addKeyCapture([ Phaser.Keyboard.W,
 				Phaser.Keyboard.S, Phaser.Keyboard.A, Phaser.Keyboard.D,
-				Phaser.Keyboard.SPACEBAR ]);
+				Phaser.Keyboard.SPACEBAR,Phaser.Keyboard.SHIFT]);
 
 		game.camera.follow(game.global.myPlayer.image);
 

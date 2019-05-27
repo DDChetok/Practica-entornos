@@ -246,7 +246,7 @@ window.onload = function() {
 
 function checkMuerte(player,vida,puntuaciones,roomGamemode,rondasPerdidas){
 	game.global.myPlayer.vida = vida;
-	if (player.vida <= 0){ //Si el jugador muere
+	if (player.vida == 0){ //Si el jugador muere
 		game.global.myPlayer.vida = 100;
 
 		if(roomGamemode == "classic"){

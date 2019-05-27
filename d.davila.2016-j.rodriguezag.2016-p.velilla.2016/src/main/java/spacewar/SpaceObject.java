@@ -5,6 +5,8 @@ public class SpaceObject {
 	private int collisionFactor;
 	private double posX, posY, velX, velY, facingAngle;
 	private boolean Pintado;
+	
+	public double propulsion = 0;
 
 	public double getPosX() {
 		return this.posX;
@@ -38,7 +40,7 @@ public class SpaceObject {
 
 	public void incVelocity(double velX, double velY) {
 		this.velX += velX;
-		this.velY += velY;
+		this.velY += velY; 
 	}
 
 	public void multVelocity(double delta) {
