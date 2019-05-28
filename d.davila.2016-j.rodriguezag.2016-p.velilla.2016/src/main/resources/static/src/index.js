@@ -126,12 +126,13 @@ window.onload = function() {
 				console.dir(msg)
 			}
 
-			if(msg.roomGamemode == "classic"){
-				Spacewar.gameState.rondasText.setText(msg.rondasPerdidasOtrosJugadores[0].rondasPerdidas + " - " + msg.rondasPerdidasOtrosJugadores[1].rondasPerdidas);
-			}else if(msg.roomGamemode == "battle_royale"){
-				Spacewar.gameState.rondasText.setText(msg.numVivos + " ships alive" );
+			if(typeof Spacewar.gameState.rondasText !== 'undefined' && msg.rondasPerdidasOtrosJugadores.length >= 2){
+				if(msg.roomGamemode == "classic"){
+					Spacewar.gameState.rondasText.setText(msg.rondasPerdidasOtrosJugadores[0].rondasPerdidas + " - " + msg.rondasPerdidasOtrosJugadores[1].rondasPerdidas);
+				}else if(msg.roomGamemode == "battle_royale"){
+					Spacewar.gameState.rondasText.setText(msg.numVivos + " ships alive" );
+				}
 			}
-			
 			
 			if (typeof game.global.myPlayer.image !== 'undefined') {
 				for (var player of msg.players) {

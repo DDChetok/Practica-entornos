@@ -27,7 +27,6 @@ Spacewar.scoreboardState.prototype = {
 
 	update : function() {
 		//game.state.start('gameState')
-		console.log("SCOREBOarD");
 	},
 	
 	goBack:function(){
@@ -42,9 +41,9 @@ Spacewar.scoreboardState.prototype = {
 
 		if(game.global.myPlayer.winner){
 			if(game.global.myPlayer.room.gameMode == "classic"){
-				this.winTextwinner = this.game.add.text(this.game.width / 2 - 250, 100 , "YOU WIN!", { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
+				this.winTextwinner = this.game.add.text(this.game.width / 2 - 350, 270 , "YOU WIN!", { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
 			}else{
-				this.winTextwinner = this.game.add.text(this.game.width / 2 - 250, 300 , "WINNER WINNER " + "\n" + " CHICKEN DINNER!", { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
+				this.winTextwinner = this.game.add.text(this.game.width / 2 - 450, 250 , "WINNER WINNER " + "\n" + " CHICKEN DINNER!", { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
 			}
 			
 		}
@@ -52,7 +51,7 @@ Spacewar.scoreboardState.prototype = {
 		var puntuacionesOrdenadas = this.ordenarPuntuaciones(game.global.myPlayer.room.score);
 
 		for(i = 0; i<game.global.myPlayer.room.score.length;i++){
-			this.score = this.game.add.text(this.game.width / 2 - 100, 100 + (i*40), "Jugador: " +puntuacionesOrdenadas[i].nombre + " Puntuacion: " + puntuacionesOrdenadas[i].score, { font: "20px Chakra Petch", fill: "#ffffff", align: "center" });
+			this.score = this.game.add.text(this.game.width / 2 , 100 + (i*40), "Jugador: " +puntuacionesOrdenadas[i].nombre + " Puntuacion: " + puntuacionesOrdenadas[i].score, { font: "20px Chakra Petch", fill: "#ffffff", align: "center" });
 		}
 	},
 

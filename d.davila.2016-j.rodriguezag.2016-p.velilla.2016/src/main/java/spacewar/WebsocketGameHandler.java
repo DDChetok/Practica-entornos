@@ -88,7 +88,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				player.rondasPerdidas += 1;	
 				
 				for(Player p : game.roomMap.get(player.getNameRoom()).playersSet.values()) {
-					p.setVida(100);
+					//p.setVida(100);
 					p.initSpaceship(500, 300, -90/*Math.random() * 360*/);
 				}
 				Thread.sleep(100);

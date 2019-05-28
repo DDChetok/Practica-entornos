@@ -195,7 +195,7 @@ Spacewar.gameState.prototype = {
 		
 	if (this.shiftKey.isDown && !game.global.myPlayer.reloadingPropulsor) {
 			if(this.firePropulsor()){
-				msg.propulsion = 1.5;
+				msg.propulsion = 2;
 				
 			}else{
 				msg.propulsion = 0;

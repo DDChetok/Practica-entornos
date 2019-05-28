@@ -60,6 +60,11 @@ Spacewar.menuState.prototype = {
 		Spacewar.menuState.noGameFoundTimer.start();
 		Spacewar.menuState.noGameFoundTimer.pause();
 	
+		//Eliminar textos para que carguen de nuevo
+		if(typeof Spacewar.gameState.rondasText !== 'undefined'){
+			Spacewar.gameState.rondasText.destroy();
+		}
+		
 	},
 	
 	initMyPlayer: function(){
@@ -155,7 +160,7 @@ Spacewar.menuState.prototype = {
 			this.shots[this.actualShot].rotation = this.game.physics.arcade.angleBetween(game.global.myPlayer.image, this.shots[this.actualShot]);	
 			
 			this.shots[this.actualShot].reset(x, y);
-			this.shots[this.actualShot].body.velocity.setToPolar(game.global.myPlayer.image.rotation,450);
+			this.shots[this.actualShot].body.velocity.setToPolar(game.global.myPlayer.image.rotation,650);
 			//this.game.physics.arcade.moveToPointer(this.shots[this.actualShot], 100);
 
 		}

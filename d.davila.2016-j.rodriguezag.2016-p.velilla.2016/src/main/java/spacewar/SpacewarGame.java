@@ -123,38 +123,6 @@ public class SpacewarGame {
 				ArrayNode arrayNodePuntuaciones = mapper.createArrayNode();
 				ArrayNode arrayNodeRondas = mapper.createArrayNode();
 				
-				// Update players
-				for (Player player : room.playersSet.values()) {
-					player.lock.lock();
-					player.calculateMovement();
-					if(player.getPosX() < 0) {
-						player.setPosition(maxX, player.getPosY());
-					}
-					if(player.getPosX() > maxX) {
-						player.setPosition(0, player.getPosY());
-					}
-					if(player.getPosY() < 0) {
-						player.setPosition(player.getPosX(),maxY);
-					}
-					if(player.getPosY() > maxY) {
-						player.setPosition(player.getPosX(),0);
-					}
-					
-					ObjectNode jsonPlayer = mapper.createObjectNode();
-					jsonPlayer.put("id", player.getPlayerId());
-					jsonPlayer.put("shipType", player.getShipType());
-					jsonPlayer.put("posX", player.getPosX());
-					jsonPlayer.put("posY", player.getPosY());
-					jsonPlayer.put("facingAngle", player.getFacingAngle());
-					jsonPlayer.put("nombre", player.getNameRoom());
-					jsonPlayer.put("PlayerNombre", player.getPlayerName());
-					jsonPlayer.put("vida", player.getVida());
-					jsonPlayer.put("puntuacion", player.getPuntuacion());
-					jsonPlayer.put("rondasPerdidas",player.rondasPerdidas);
-					arrayNodePlayers.addPOJO(jsonPlayer);   
-					player.lock.unlock();
-				}
-	
 				// Update bullets and handle collision
 				for (Projectile projectile : room.projectiles.values()) {
 					projectile.applyVelocity2Position();
@@ -191,6 +159,43 @@ public class SpacewarGame {
 					}
 					arrayNodeProjectiles.addPOJO(jsonProjectile);
 				}
+				
+				// Update players
+				for (Player player : room.playersSet.values()) {
+					player.lock.lock();
+					player.calculateMovement();
+					if(player.getPosX() < 0) {
+						player.setPosition(maxX, player.getPosY());
+					}
+					if(player.getPosX() > maxX) {
+						player.setPosition(0, player.getPosY());
+					}
+					if(player.getPosY() < 0) {
+						player.setPosition(player.getPosX(),maxY);
+					}
+					if(player.getPosY() > maxY) {
+						player.setPosition(player.getPosX(),0);
+					}
+					
+					ObjectNode jsonPlayer = mapper.createObjectNode();
+					jsonPlayer.put("id", player.getPlayerId());
+					jsonPlayer.put("shipType", player.getShipType());
+					jsonPlayer.put("posX", player.getPosX());
+					jsonPlayer.put("posY", player.getPosY());
+					jsonPlayer.put("facingAngle", player.getFacingAngle());
+					jsonPlayer.put("nombre", player.getNameRoom());
+					jsonPlayer.put("PlayerNombre", player.getPlayerName());
+					jsonPlayer.put("vida", player.getVida());
+					if(player.getVida() <= 0) {
+						player.setVida(100);
+					}
+					jsonPlayer.put("puntuacion", player.getPuntuacion());
+					jsonPlayer.put("rondasPerdidas",player.rondasPerdidas);
+					arrayNodePlayers.addPOJO(jsonPlayer);   
+					player.lock.unlock();
+				}
+	
+				
 				
 				for(Player puntuacion : room.puntuacionSet.values()) {
 					ObjectNode jsonPlayerRondas = mapper.createObjectNode();

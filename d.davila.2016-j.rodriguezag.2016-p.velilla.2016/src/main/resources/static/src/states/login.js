@@ -24,7 +24,6 @@ Spacewar.loginState.prototype = {
 
 	update : function() {
 		//game.state.start('gameState')
-		console.log("LOGIN");
     },
     
     enterPlayerName: function(){
