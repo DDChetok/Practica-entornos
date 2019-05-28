@@ -41,12 +41,6 @@ Spacewar.menuState.prototype = {
 		}
 		
 		for (i = 0;i < game.global.otherPlayers.length;i++){
-			if(typeof game.global.otherPlayers[i] !== undefined){
-				//game.global.otherPlayers[msg.id].image.destroy()
-				//game.global.otherPlayers[i].textoNombre.destroy()
-				//game.global.otherPlayers[i].healthBar.destroy();
-				//game.global.otherPlayers[i].redHealthBar.destroy();
-			}
 			delete game.global.otherPlayers[i];
 		}
 	
@@ -182,7 +176,6 @@ Spacewar.menuState.prototype = {
 			case 2:
 				proyectile.kill();
 				this.sendRoomRequest();
-				//game.state.start('matchmakingState')
 				break;
 		}
 	},
@@ -237,7 +230,6 @@ Spacewar.menuState.prototype = {
 	},
 
 	createGameState: function(){
-		//DAAAAAAAAAAAAAAAAAANIIIIIIIIIIIIIIIIII
 		// We create a procedural starfield background
 		for (var i = 0; i < this.numStars; i++) {
 			let sprite = game.add.sprite(game.world.randomX,
@@ -266,10 +258,7 @@ Spacewar.menuState.prototype = {
 				game.global.myPlayer.shipType)
 		game.global.myPlayer.image.anchor.setTo(0.5, 0.5)
 		
-		
-	
 
-		//DAAAAAAAAAAAAAAAAAANIIIIIIIIIIIIIIIIII
 		this.bulletTime = 0
 		this.fireBullet = function() {
 			if (game.time.now > this.bulletTime) {
@@ -309,6 +298,15 @@ Spacewar.menuState.prototype = {
 		document.getElementById("RoomJoin").style.display = "none";
 
 		document.getElementById("startGame").style.display = "none";
+	},
+
+	removeKeys: function(){
+		game.input.keyboard.enabled = false;
+	},
+
+	activeKeys: function(){
+		game.input.keyboard.enabled = true;
 	}
+
 
 }

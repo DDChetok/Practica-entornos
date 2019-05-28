@@ -29,6 +29,8 @@ Spacewar.roomState.prototype = {
 	},
 
 	joinRoom: function(){
+		Spacewar.menuState.prototype.activeKeys();
+		
 		var msg = {
 			event: "JOIN_ROOM_REQUEST",
 			roomName : document.getElementById("RoomNameSearch").value
@@ -45,6 +47,7 @@ Spacewar.roomState.prototype = {
 	},
 	
 	goBack:function(){
+		Spacewar.menuState.prototype.activeKeys();
 		game.state.start('menuState');
 	}
 

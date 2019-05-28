@@ -24,8 +24,6 @@ Spacewar.lobbyState.prototype = {
 	},
 
 	create : function() {
-		//game.state.start('matchmakingState')
-
 		//Mostrar HTML
 		this.showHTML();
 
@@ -50,6 +48,8 @@ Spacewar.lobbyState.prototype = {
 	},
 
 	createRoom: function(){
+		Spacewar.menuState.prototype.activeKeys();
+
 		var msg = {
 			event: "CREATE_ROOM_REQUEST",
 			roomName : document.getElementById("RoomName").value,
@@ -57,13 +57,16 @@ Spacewar.lobbyState.prototype = {
 			roomMaxPlayers :  document.getElementById("RoomMaxPlayers").value
 		}
 		
+		//No puedes crear una sala sin nombre
 		if(msg.roomName != ""){
+			//Para el modo classic solo se permiten 2 jugadores. El battle royale tiene un mínimo de 2 y un máximode 50
 			if(msg.roomMaxPlayers < game.global.minPlayersPorPartida || msg.roomGamemode == "classic"){
 				msg.roomMaxPlayers = game.global.minPlayersPorPartida;
 			}
 			if(msg.roomMaxPlayers > game.global.maxPlayersPorPartida){
 				msg.roomMaxPlayers = game.global.maxPlayersPorPartida;
 			}
+
 			game.global.socket.send(JSON.stringify(msg));
 		}
 		
@@ -78,6 +81,7 @@ Spacewar.lobbyState.prototype = {
 	},
 
 	goBack:function(){
+		Spacewar.menuState.prototype.activeKeys();
 		game.state.start('menuState');
 	}
 }

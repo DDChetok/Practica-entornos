@@ -8,6 +8,7 @@ Spacewar.scoreboardState.prototype = {
 		if (game.global.DEBUG_MODE) {
 			console.log("[DEBUG] Entering **scoreboard** state");
 		}
+
 	},
 
 	preload : function() {
@@ -15,8 +16,6 @@ Spacewar.scoreboardState.prototype = {
 	},
 
 	create : function() {
-		/*game.global.myPlayer.room.name = 'MENU';
-		game.global.myPlayer.room.idHost = -1;*/
 		this.showScore();
 		
 		//Botón ir atrás

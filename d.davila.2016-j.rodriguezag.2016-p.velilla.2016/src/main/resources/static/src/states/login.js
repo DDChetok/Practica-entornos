@@ -23,7 +23,7 @@ Spacewar.loginState.prototype = {
 	},
 
 	update : function() {
-		//game.state.start('gameState')
+
     },
     
     enterPlayerName: function(){
@@ -36,7 +36,7 @@ Spacewar.loginState.prototype = {
 		game.global.socket.send(JSON.stringify(msg));
 		game.global.myPlayer.PlayerNombre = document.getElementById("enterPlayerName").value
 		
-        game.state.start('menuState')
+    game.state.start('menuState')
 	},
 	
 	showHTML: function(){

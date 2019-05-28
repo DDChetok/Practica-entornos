@@ -34,10 +34,6 @@ public class SpacewarGame {
 	ObjectMapper mapper = new ObjectMapper();
 	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-	// GLOBAL GAME ROOM
-	private Map<String, Player> players = new ConcurrentHashMap<>();
-	//private Map<Integer, Projectile> projectiles = new ConcurrentHashMap<>();
-	
 	//Salas
 	public ConcurrentMap<String,Room> roomMap = new ConcurrentHashMap<>();
 	public Lock roomLock = new ReentrantLock();
@@ -50,26 +46,20 @@ public class SpacewarGame {
 		roomMap.put(menu.getRoomName(), menu);
 	}
 
+	//Intoduce al jugador en la sala que tenga en su player.roomName
 	public void addPlayer(Player player) {
-		//players.put(player.getSession().getId(), player);
 		roomLock.lock();
-		player.initSpaceship(500, 300, -90/*Math.random() * 360*/);
+		player.initSpaceship(500, 300, -90);
 		Room room = roomMap.get(player.roomName);
 		room.playersSet.put(player.getPlayerId(),player);
 		room.puntuacionSet.put(player.getPlayerId(),player);
-		int count = room.numPlayers.getAndIncrement();
+		room.numPlayers.getAndIncrement();
 		player.setVida(100);
 		player.rondasPerdidas = 0;
-		//if (count >= 0 && player.getNameRoom() != "") {
-			//this.startGameLoop();
-		//}
 		roomLock.unlock();
 	}
 
-	public Collection<Player> getPlayers() {
-		return players.values();
-	}
-
+	//Borra al jugador de la sala en la que está y si la sala se queda vacía, se borra
 	public void removePlayer(Player player) {
 		roomLock.lock();
 		Room room = roomMap.get(player.roomName);
@@ -92,6 +82,7 @@ public class SpacewarGame {
 		}
 	}
 
+	//Envia un mensaje a todos los jugadores de una misma sala
 	public void broadcast(String message,String roomName) {
 		Room r = roomMap.get(roomName);
 			for (Player player : r.playersSet.values()) {
@@ -164,6 +155,7 @@ public class SpacewarGame {
 				for (Player player : room.playersSet.values()) {
 					player.lock.lock();
 					player.calculateMovement();
+					//Si te sales por un lado de la pantalla, entras por su contrario
 					if(player.getPosX() < 0) {
 						player.setPosition(maxX, player.getPosY());
 					}
@@ -195,8 +187,7 @@ public class SpacewarGame {
 					player.lock.unlock();
 				}
 	
-				
-				
+				//Recoge las puntuaciones de los jugadores de la sala y lo añade al json
 				for(Player puntuacion : room.puntuacionSet.values()) {
 					ObjectNode jsonPlayerRondas = mapper.createObjectNode();
 					jsonPlayerRondas.put("rondasPerdidas", puntuacion.rondasPerdidas);
@@ -213,6 +204,7 @@ public class SpacewarGame {
 				if (removeBullets)
 					room.projectiles.keySet().removeAll(bullets2Remove);
 	
+				//Si queda un jugador, no estás en el menú y al menos ha habido 2 jugadores en la sala, se acaba la partida
 				if(room.numPlayers.get() <= 1 && room.getRoomName() != "MENU" && room.puntuacionSet.size()>=2) {
 					room.acabada = true;
 				}

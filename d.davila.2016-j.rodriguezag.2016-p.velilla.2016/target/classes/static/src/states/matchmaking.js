@@ -52,8 +52,6 @@ Spacewar.matchmakingState.prototype = {
 			roomName: game.global.myPlayer.room.name
 		}
 
-		//Spacewar.matchmakingState.roomGamemodeText.setText("Gamemode: " + game.global.myPlayer.room.gameMode);
-
 		game.global.socket.send(JSON.stringify(msg));
 	},
 
@@ -64,7 +62,7 @@ Spacewar.matchmakingState.prototype = {
 	},
 
 	startGame:function(){
-		//game.state.start('gameState');
+		
 		var msg={
 			event : "ROOM_READY",
 			ready : true
@@ -81,6 +79,7 @@ Spacewar.matchmakingState.prototype = {
 		document.getElementById("RoomNameSearch").style.display = "none";
 		document.getElementById("RoomJoin").style.display = "none";
 
+		//Si eres el host de la partida, puedes forzar que empiece si al menos hay 2 personas en la sala
 		if(game.global.myPlayer.room.idHost == game.global.myPlayer.id){
 			document.getElementById("startGame").style.display = "block";
 		}

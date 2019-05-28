@@ -54,6 +54,7 @@ window.onload = function() {
 	game.global.socket.onmessage = (message) => {
 		var msg = JSON.parse(message.data);
 		switch (msg.event) {
+		//El server responde si la sala existe o no, y si es así guarda la información de la misma
 		case 'JOIN_ROOM_REQUEST':
 			if(msg.existe){
 				console.log("Te has unido a la sala");
@@ -66,27 +67,28 @@ window.onload = function() {
 				game.global.myPlayer.vida = msg.vida
 				game.state.start('matchmakingState');
 			}else{
-				//console.log("No existe ninguna sala con ese nombre o la partida ya ha comenzado, gl in esports :(");
 				Spacewar.menuState.prototype.updateText("No hay ninguna sala disponible");
 			}
 			break;
+		//Comprueba si se puede empezar la partida
 		case 'CHECK_ESTADO':
-			//console.log(msg.numJugadores);
 			Spacewar.matchmakingState.prototype.updateText(msg.numJugadores);
 			if(msg.ready){
 				game.state.start('gameState');
-
 			}
 			break;
+		
+		//Recibe un mensaje de chat y lo muestra
 		case 'CHAT':
 			console.log("WS message: " + msg.message);
 			if(msg.name != game.global.myPlayer.PlayerNombre){
 				$('#chat').val($('#chat').val() + "\n" + msg.name + ": " + msg.message);
 			}
 			break;
+		
+		//Recibe si se ha podido crear o no la sala, y si es así, guarda su información
 		case 'CREATE_ROOM_REQUEST' :
 			if(msg.salaCreada){
-				console.log("Se ha creado la sala " + msg.roomName + " para jugar " + msg.roomGamemode );
 				game.global.myPlayer.room = {
 					name : msg.roomName,
 					idHost : msg.idHost,
@@ -95,11 +97,11 @@ window.onload = function() {
 				}
 				game.state.start('matchmakingState');
 			}else{
-				Spacewar.lobbyState.prototype.updateText("Ya hay una sala con ese nombre, gl in esports :(");
-				console.log("Ya hay una sala con ese nombre, gl in esports :(");
+				Spacewar.lobbyState.prototype.updateText("Ya hay una sala con ese nombre :(");
 			}
-			
 			break;
+
+		//Da al jugador un id,una nave y una room por defecto
 		case 'JOIN':
 			if (game.global.DEBUG_MODE) {
 				console.log('[DEBUG] JOIN message recieved')
@@ -112,20 +114,19 @@ window.onload = function() {
 				idHost: msg.idHost
 			}
 			
-			
-			
 			if (game.global.DEBUG_MODE) {
 				console.log('[DEBUG] ID assigned to player: ' + game.global.myPlayer.id)
 			}
-
 			break
 
+		//Recibe la información de la partida
 		case 'GAME STATE UPDATE' :
 			if (game.global.DEBUG_MODE) {
 				console.log('[DEBUG] GAME STATE UPDATE message recieved')
 				console.dir(msg)
 			}
 
+			//Actualiza el texto de las rondas(classic) o el número de naves vivas (battle royale)
 			if(typeof Spacewar.gameState.rondasText !== 'undefined' && msg.rondasPerdidasOtrosJugadores.length >= 2){
 				if(msg.roomGamemode == "classic"){
 					Spacewar.gameState.rondasText.setText(msg.rondasPerdidasOtrosJugadores[0].rondasPerdidas + " - " + msg.rondasPerdidasOtrosJugadores[1].rondasPerdidas);
@@ -136,7 +137,7 @@ window.onload = function() {
 			
 			if (typeof game.global.myPlayer.image !== 'undefined') {
 				for (var player of msg.players) {
-					if (game.global.myPlayer.id == player.id) { //MI JUGADOR
+					if (game.global.myPlayer.id == player.id) { //Actualiza a tu jugador
 
 						checkMuerte(game.global.myPlayer,player.vida,msg.puntuaciones,msg.roomGamemode,player.rondasPerdidas);
 						actualizarPosicion(game.global.myPlayer,player);
@@ -145,17 +146,14 @@ window.onload = function() {
 
 						
 					} else { //OTROS JUGADORES
-						//if(game.global.myPlayer.room.name == player.nombre){ //Crear otros jugadores
-
-							
-							if (typeof game.global.otherPlayers[player.id] == 'undefined') {
+								
+							if (typeof game.global.otherPlayers[player.id] == 'undefined') { //Crear otros jugadores si no existen ya
 								game.global.otherPlayers[player.id] = {
 										image : game.add.sprite(player.posX, player.posY, 'spacewar', player.shipType),
-										//textoNombre : game.add.text(player.posX, player.posY + 20, player.PlayerNombre, { font: "20px Chakra Petch", fill: "#ffffff", align: "center" }),
 									}
 								game.global.otherPlayers[player.id].image.anchor.setTo(0.5, 0.5)
 								
-							} else { //Actualizar otros jugadores
+							} else { //Actualizar otros jugadores si ya existen
 								
 								crearBarraVidaOtherPlayer(game.global.otherPlayers[player.id]);
 								game.global.otherPlayers[player.id].vida = player.vida;
@@ -167,14 +165,12 @@ window.onload = function() {
 
 								crearTextoNombreOtherPlayers(game.global.otherPlayers[player.id],player.PlayerNombre)
 							}
-						
-					//}
-				}
+	
+					}
 				}
 			}
 				for (var projectile of msg.projectiles) {
-					//if(game.global.myPlayer.room.name == player.nombre){
-						if (projectile.isAlive) {
+						if (projectile.isAlive) { //Pinta los proyectiles
 							game.global.projectiles[projectile.id].image.x = projectile.posX
 							game.global.projectiles[projectile.id].image.y = projectile.posY
 							if (game.global.projectiles[projectile.id].image.visible === false) {
@@ -183,7 +179,7 @@ window.onload = function() {
 							}
 						} else {
 							if (projectile.isHit) {
-								// we load explosion
+								//Pinta las explosiones
 								let explosion = game.add.sprite(projectile.posX, projectile.posY, 'explosion')
 								explosion.animations.add('explosion')
 								explosion.anchor.setTo(0.5, 0.5)
@@ -192,9 +188,9 @@ window.onload = function() {
 							}
 							game.global.projectiles[projectile.id].image.visible = false
 						}
-				//}
 			}
 
+			//Si se acaba la partida y no estás en el menú, pasas a la pantalla de puntuaciones
 			if(msg.acabada == true && game.global.myPlayer.room.name != 'MENU' && msg.room == game.global.myPlayer.room.name){
 				var mess = {
 						event: "ACABADA"
@@ -208,6 +204,8 @@ window.onload = function() {
 				
 			}
 			break
+
+		//Borra a los jugadores que no están en tu sala
 		case 'REMOVE PLAYER' :
 			if (game.global.DEBUG_MODE) {
 				console.log('[DEBUG] REMOVE PLAYER message recieved')
@@ -220,9 +218,8 @@ window.onload = function() {
 				game.global.otherPlayers[msg.id].redHealthBar.destroy();
 				delete game.global.otherPlayers[msg.id]
 			}
-			
-			//game.global.myPlayer.room.score = msg.score;
 			break;
+
 		default :
 			console.dir(msg)
 			break
@@ -242,16 +239,16 @@ window.onload = function() {
 
 	game.state.start('bootState')
 	
-	
 }
 
+//Comprueba qué pasa cuando mueres
 function checkMuerte(player,vida,puntuaciones,roomGamemode,rondasPerdidas){
 	game.global.myPlayer.vida = vida;
 	if (player.vida == 0){ //Si el jugador muere
 		game.global.myPlayer.vida = 100;
 
 		if(roomGamemode == "classic"){
-			if(rondasPerdidas >= 1){
+			if(rondasPerdidas >= 1){ 
 				player.room.name = "MENU";
 		
 				var msg = {

@@ -155,14 +155,14 @@
 	<!--BOTON DE COMENZAR PARTIDA-->
 	<input id="startGame" type="button" onclick = "Spacewar.matchmakingState.prototype.startGame()" value="Start game">
 	<!--BOTONES DE UNIRSE SALA-->
-	<input type="text" id="RoomNameSearch" placeholder="Name">
+	<input type="text" id="RoomNameSearch" onclick = "Spacewar.menuState.prototype.removeKeys()" placeholder="Name">
 	<input id="RoomJoin" type="button" onclick = "Spacewar.roomState.prototype.joinRoom()" value="Join the room">
 	<!--BOTONES DE CREAR NOMBRE JUGADOR-->
 	<input type="text" id="enterPlayerName" placeholder="Tu Nombre">
 	<input id="confirmPlayerName" type="button" onclick = "Spacewar.loginState.prototype.enterPlayerName()" value="Join the menu">
 	<!--BOTONES DE CREAR SALA-->
 
-	<input type="text" id="RoomName" placeholder="Name">
+	<input type="text" id="RoomName" onclick = "Spacewar.menuState.prototype.removeKeys()" placeholder="Name">
 
 	<select id="RoomGamemode" name="Tipo 1">
 		<option value="classic">Classic</option>
@@ -177,9 +177,9 @@
 	<div id="gameDiv"></div>
 	<div class="panel">
 		<span>Message: </span><input type="text"
-			name="message" id="message" placeholder="Message" maxlength="80"
-			style="width: 60%" />
-		<button id="send-btn">Send</button>
+			name="message" id="message" placeholder="Message" maxlength="80" onclick = "Spacewar.menuState.prototype.removeKeys()"
+			style ="width: 60%" />
+		<button id="send-btn" onclick = "Spacewar.menuState.prototype.activeKeys()" >Send</button>
 		<textarea id="chat" rows="20" cols=""></textarea>
 	</div>
 </body>

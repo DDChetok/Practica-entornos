@@ -18,8 +18,6 @@ Spacewar.gameState.prototype = {
 			console.log("[DEBUG] Entering **GAME** state");
 		}
 		for (i = 0;i < game.global.otherPlayers.length;i++){
-			//delete game.global.otherPlayers[i].healthBar;
-			//delete game.global.otherPlayers[i].redHealthBar;
 			delete game.global.otherPlayers[i];
 		}
 		
@@ -41,7 +39,7 @@ Spacewar.gameState.prototype = {
 		Spacewar.gameState.rondasText.anchor.setTo(0.5, 0.5);
 		Spacewar.gameState.rondasText.fixedToCamera = true;
 
-		this.propulsionText = this.game.add.text(700 , this.game.height - 100 ,game.global.myPlayer.actualPropulsor + "/" + this.maxPropulsor, { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
+		this.propulsionText = this.game.add.text(800 , this.game.height - 100 ,game.global.myPlayer.actualPropulsor + "/" + this.maxPropulsor, { font: "40px Chakra Petch", fill: "#ffffff", align: "center" });
 		this.propulsionText.anchor.setTo(0.5, 0.5);
 		this.propulsionText.fixedToCamera = true;
 
